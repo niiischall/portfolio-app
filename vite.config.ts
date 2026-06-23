@@ -7,6 +7,19 @@ dotenv.config();
 
 export default defineConfig({
   plugins: [react()],
+  define: {'process.env': {}},
+  resolve: {
+    dedupe: ['react', 'react-dom', 'react-is', 'styled-components'],
+  },
+  optimizeDeps: {
+    include: [
+      'sanity',
+      '@sanity/vision',
+      '@sanity/ui',
+      '@sanity/icons',
+      'styled-components',
+    ],
+  },
   server: {
     proxy: {
       "/api/sanity": {

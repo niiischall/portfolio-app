@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import {Routes, Route} from 'react-router-dom';
 
 import Navigation from '../sections/Navigation';
 import Hero from '../sections/Hero';
@@ -8,11 +8,12 @@ import Experiments from '../sections/Experiments';
 import Writings from '../sections/Writings';
 import Contact from '../sections/Contact';
 import Talks from '../sections/Talks';
+import StudioPage from '../sanity/Studio';
 
-import { useSanityData } from '../lib/sanity-client';
+import {useSanityData} from '../lib/sanity-client';
 
-export const Layout = () => {
-  const { data, isLoading, isError } = useSanityData();
+const PortfolioLayout = () => {
+  const {data, isLoading, isError} = useSanityData();
 
   if (isLoading || isError) {
     return null;
@@ -31,6 +32,15 @@ export const Layout = () => {
         <Route path="/contact" Component={() => <Contact data={data?.contact} />} />
       </Routes>
     </>
+  );
+};
+
+export const Layout = () => {
+  return (
+    <Routes>
+      <Route path="/studio/*" element={<StudioPage />} />
+      <Route path="/*" element={<PortfolioLayout />} />
+    </Routes>
   );
 };
 

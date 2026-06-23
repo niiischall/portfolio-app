@@ -5,6 +5,7 @@
 /dist
 
 # misc
+.sanity
 .DS_Store
 .env
 package-lock.json
