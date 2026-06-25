@@ -23,7 +23,7 @@ const PortfolioLayout = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation data={data?.navigation} hero={data?.hero} />
-      <main className="flex-1 flex flex-col bg-light">
+      <main id="main-content" className="flex-1 flex flex-col bg-light">
         <Routes>
           <Route path="/" Component={() => <Hero data={data?.hero} />} />
           <Route path="/about" Component={() => <About data={data?.about} />} />

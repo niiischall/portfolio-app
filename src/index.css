@@ -42,6 +42,9 @@
   .divider {
     @apply w-[25%] h-[1px] mx-auto bg-primary;
   }
+  .skip-to-content {
+    @apply sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-light focus:text-primary focus:font-sans focus:text-sm focus:shadow-box focus:outline-none focus:ring-2 focus:ring-secondary;
+  }
 }
 
 /*Custom styling*/

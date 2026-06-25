@@ -24,6 +24,7 @@ Personal portfolio site built with React, Vite, and Tailwind. Content is managed
    VITE_API_TOKEN=your_sanity_api_token
    VITE_PUBLIC_POSTHOG_KEY=your_posthog_key
    VITE_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+   VITE_SITE_URL=https://www.nischalnikit.xyz
    ```
 
    The Studio reads `VITE_PROJECT_ID` and `VITE_DATASET` from the same file. No separate Sanity Studio env vars are required.
@@ -66,4 +67,4 @@ api/              Serverless Sanity proxy (deploy target)
 
 ## Deployment
 
-Build and deploy `portfolio-client` as a single app. Set the same `VITE_*` environment variables in your hosting provider. After deploy, confirm the portfolio routes and `/studio` both load on your production domain. `vercel.json` and `public/_redirects` include SPA fallbacks so direct links to routes work without hash URLs.
+Build and deploy `portfolio-client` as a single app. Set the same `VITE_*` environment variables in your hosting provider (including `VITE_SITE_URL` for canonical URLs, Open Graph tags, and `sitemap.xml`). After deploy, confirm the portfolio routes and `/studio` both load on your production domain. `vercel.json` and `public/_redirects` include SPA fallbacks so direct links to routes work without hash URLs. Security headers ship via `vercel.json` and `public/_headers`.
