@@ -6,6 +6,8 @@ import type { HeroSocialType } from '../../utils/helpers/types';
 import type { TypedObject } from 'sanity';
 import Button from '../../components/Button';
 import Click from '../../utils/svgs/Click';
+import { isExternalUrl, normalizePath } from '../../utils/helpers/routes';
+import { useNavigate } from 'react-router-dom';
 
 export interface HeroProps {
   data: {
@@ -19,7 +21,7 @@ export interface HeroProps {
       };
       text: TypedObject[];
     };
-    cover: {
+    cover?: {
       asset: {
         _type: string;
         _ref: string;
@@ -30,7 +32,8 @@ export interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = ({ data }) => {
-  const { socials = [], greeting, cover = {} } = data ?? {};
+  const navigate = useNavigate();
+  const { socials = [], greeting } = data ?? {};
   const { link, text: greetingText = [] } = greeting ?? {};
   const { text: buttonText = '', slug } = link ?? {};
   const { current: buttonSlug = '' } = slug ?? {};
@@ -40,8 +43,8 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
       className="bg-light relative w-full md:mx-auto px-4 pt-6 pb-12 flex-1 md:px-8 md:pt-12 md:pb-48 "
       id="home"
     >
-      <div className="max-w-4xl flex flex-col items-start justify-start md:flex-row md:justify-start md:items-center md:space-x-6 lg:space-x-12 md:mx-auto">
-        <div className="flex flex-col absolute top-15 left-4 md:relative">
+      <div className="max-w-4xl flex flex-col items-start justify-start md:flex-row md:items-start md:space-x-6 lg:space-x-12 md:mx-auto">
+        <div className="flex flex-col absolute top-15 left-4 md:relative md:top-auto md:left-auto">
           {socials.map((social: HeroSocialType) => {
             return (
               <Button
@@ -57,21 +60,18 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
             );
           })}
         </div>
-        <div className="order-first md:order-2 flex justify-start pl-12 md:pl-0 lg:pl-12">
-          <div className="hidden md:flex w-[300px] h-[300px]">
-            <img src={urlForImage(cover)} alt="Profile" />
-          </div>
-          <div className="md:hidden">
-            <img src={urlForImage(cover)?.height(200).width(200).url()} alt="Profile" />
-          </div>
-        </div>
-        <div className="max-w-lg md:max-w-md mt-16 md:mt-0 lg:max-w-lg">
+        <div className="max-w-lg pl-12 md:pl-0 lg:max-w-lg">
           <PortableText value={greetingText} />
           {buttonText ? (
             <Button
               styles="btn mt-8 lowercase"
               onClick={() => {
-                document.location.href = buttonSlug;
+                const path = normalizePath(buttonSlug);
+                if (isExternalUrl(path)) {
+                  window.location.href = path;
+                } else {
+                  navigate(path);
+                }
               }}
               analyticsLabel={`hero-${buttonSlug}`}
             >

@@ -1,6 +1,6 @@
 # Portfolio
 
-Personal portfolio site built with React, Vite, and Tailwind. Content is managed in an embedded Sanity Studio at `/#/studio`.
+Personal portfolio site built with React, Vite, and Tailwind. Content is managed in an embedded Sanity Studio at `/studio`.
 
 ## Prerequisites
 
@@ -36,8 +36,8 @@ Personal portfolio site built with React, Vite, and Tailwind. Content is managed
 pnpm dev
 ```
 
-- Portfolio: [http://localhost:5173/#/](http://localhost:5173/#/)
-- Sanity Studio: [http://localhost:5173/#/studio](http://localhost:5173/#/studio)
+- Portfolio: [http://localhost:5173/](http://localhost:5173/)
+- Sanity Studio: [http://localhost:5173/studio](http://localhost:5173/studio)
 
 One process serves both the site and the CMS.
 
@@ -66,4 +66,4 @@ api/              Serverless Sanity proxy (deploy target)
 
 ## Deployment
 
-Build and deploy `portfolio-client` as a single app. Set the same `VITE_*` environment variables in your hosting provider. After deploy, confirm the portfolio routes and `/#/studio` both load on your production domain.
+Build and deploy `portfolio-client` as a single app. Set the same `VITE_*` environment variables in your hosting provider. After deploy, confirm the portfolio routes and `/studio` both load on your production domain. `vercel.json` and `public/_redirects` include SPA fallbacks so direct links to routes work without hash URLs.

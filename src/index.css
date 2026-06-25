@@ -13,7 +13,10 @@
 
 @layer components {
   html {
-    @apply scroll-smooth scroll-pt-2;
+    @apply scroll-smooth scroll-pt-2 bg-light;
+  }
+  body {
+    @apply bg-light;
   }
   header {
     @apply px-[6%] pt-[8%] bg-light md:px-[10%] md:py-[2%];
