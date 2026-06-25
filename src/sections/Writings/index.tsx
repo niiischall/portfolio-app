@@ -31,24 +31,32 @@ const Writings: React.FC<WritingsProps> = ({ data }) => {
             const { _key = '', heading = '', body = '', link = '', image = {} } = item ?? {};
             return (
               <div key={_key} className="max-w-lg shadow-box overflow-hidden rounded-lg">
-                <Button
-                  styles="group"
-                  onClick={() => {
-                    window.open(link, '_blank');
-                  }}
-                  analyticsLabel={`writings-${heading}`}
-                >
-                  <div className="mb-6 shadow-box">
-                    <img src={urlForImage(image)?.url()} alt={heading} />
+                {link ? (
+                  <Button styles="group" href={link} external analyticsLabel={`writings-${heading}`}>
+                    <div className="mb-6 shadow-box">
+                      <img src={urlForImage(image)?.url()} alt={heading} />
+                    </div>
+                    <div className="px-4 flex justify-end">
+                      <Click style={{ width: '18px', height: '18px' }} />
+                    </div>
+                    <div className="px-4 py-2">
+                      <h3 className="text-xl font-sans font-bold mb-4 group-hover:text-secondary text-left">
+                        {heading}
+                      </h3>
+                      <p className="text-sm mb-4 group-hover:text-secondary text-left">{body}</p>
+                    </div>
+                  </Button>
+                ) : (
+                  <div>
+                    <div className="mb-6 shadow-box">
+                      <img src={urlForImage(image)?.url()} alt={heading} />
+                    </div>
+                    <div className="px-4 py-2">
+                      <h3 className="text-xl font-sans font-bold mb-4 text-left">{heading}</h3>
+                      <p className="text-sm mb-4 text-left">{body}</p>
+                    </div>
                   </div>
-                  <div className="px-4 flex justify-end">
-                    <Click style={{ width: '18px', height: '18px' }} />
-                  </div>
-                  <div className="px-4 py-2">
-                    <h3 className="text-xl font-sans font-bold mb-4 group-hover:text-secondary text-left">{heading}</h3>
-                    <p className="text-sm mb-4 group-hover:text-secondary text-left">{body}</p>
-                  </div>
-                </Button>
+                )}
               </div>
             );
           })}

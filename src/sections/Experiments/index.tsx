@@ -32,26 +32,30 @@ const Experiments: React.FC<ExperimentsProps> = ({ data }) => {
             const { href = '' } = link ?? {};
             return (
               <div key={_key} className="w-full md:w-1/3">
-                <Button
-                  onClick={() => {
-                    window.open(href, '_blank');
-                  }}
-                  styles="group"
-                  analyticsLabel={`navigation-experiments-${heading}`}
-                >
-                  <div className="mb-6 h-[300px] w-auto max-h-[250px] overflow-hidden flex flex-col justify-center items-start">
-                    <img src={urlForImage(image)?.height(250).url()} alt={heading} />
-                  </div>
-                  <div>
-                    <div className="flex gap-2">
-                      <h3 className="text-2xl font-sans font-bold mb-4 group-hover:text-secondary text-left">
-                        {heading}
-                      </h3>
-                      <Click style={{ width: '18px', height: '18px' }} />
+                {href ? (
+                  <Button href={href} external styles="group" analyticsLabel={`navigation-experiments-${heading}`}>
+                    <div className="mb-6 h-[300px] w-auto max-h-[250px] overflow-hidden flex flex-col justify-center items-start">
+                      <img src={urlForImage(image)?.height(250).url()} alt={heading} />
                     </div>
-                    <p className="text-md mb-4 group-hover:text-secondary text-left">{body}</p>
+                    <div>
+                      <div className="flex gap-2">
+                        <h3 className="text-2xl font-sans font-bold mb-4 group-hover:text-secondary text-left">
+                          {heading}
+                        </h3>
+                        <Click style={{ width: '18px', height: '18px' }} />
+                      </div>
+                      <p className="text-md mb-4 group-hover:text-secondary text-left">{body}</p>
+                    </div>
+                  </Button>
+                ) : (
+                  <div>
+                    <div className="mb-6 h-[300px] w-auto max-h-[250px] overflow-hidden flex flex-col justify-center items-start">
+                      <img src={urlForImage(image)?.height(250).url()} alt={heading} />
+                    </div>
+                    <h3 className="text-2xl font-sans font-bold mb-4 text-left">{heading}</h3>
+                    <p className="text-md mb-4 text-left">{body}</p>
                   </div>
-                </Button>
+                )}
               </div>
             );
           })}

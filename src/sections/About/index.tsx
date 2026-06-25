@@ -35,13 +35,7 @@ const About: React.FC<AboutProps> = ({ data }) => {
             <PortableText value={overview} />
             {isCvAvailable ? (
               <div className="mt-8 justify-center items-left md:items-center">
-                <Button
-                  onClick={() => {
-                    window.open(cvLink, '_blank');
-                  }}
-                  styles="btn"
-                  analyticsLabel={`about-${cvTitle}`}
-                >
+                <Button href={cvLink} external styles="btn" analyticsLabel={`about-${cvTitle}`}>
                   {cvTitle}
                 </Button>
               </div>

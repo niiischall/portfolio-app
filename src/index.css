@@ -42,9 +42,6 @@
   .divider {
     @apply w-[25%] h-[1px] mx-auto bg-primary;
   }
-  .skip-to-content {
-    @apply sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-light focus:text-primary focus:font-sans focus:text-sm focus:shadow-box focus:outline-none focus:ring-2 focus:ring-secondary;
-  }
 }
 
 /*Custom styling*/
@@ -93,4 +90,43 @@
 
 .open .hamburger-bottom {
   transform: rotate(-45deg) translateY(6px) translateX(-6px);
+}
+
+/* Visually hidden until keyboard focus - plain CSS so Tailwind purge cannot strip it */
+.skip-to-content {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-to-content:focus {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 100;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0.5rem 1rem;
+  overflow: visible;
+  clip: auto;
+  clip-path: none;
+  white-space: normal;
+  background-color: rgb(238, 234, 227);
+  color: rgb(52, 55, 60);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  box-shadow:
+    rgba(15, 15, 15, 0.1) 0px 0px 0px 1px,
+    rgba(15, 15, 15, 0.1) 0px 2px 4px;
+  outline: 2px solid rgb(186, 38, 92);
+  outline-offset: 2px;
 }

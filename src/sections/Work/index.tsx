@@ -43,18 +43,21 @@ const Work: React.FC<WorkProps> = ({ data }) => {
               <h3 className="font-sans font-bold">{designation}</h3>
               <div className="flex items-center space-x-1">
                 <Building />
-                <Button
-                  onClick={() => {
-                    window.open(orgLink, '_blank');
-                  }}
-                  styles="text-secondary font-bold"
-                  analyticsLabel={`navigation-${orgName}`}
-                >
-                  <div className="flex gap-2">
-                    {orgName}
-                    <Click style={{ width: '16px', height: '16px' }} />
-                  </div>
-                </Button>
+                {orgLink ? (
+                  <Button
+                    href={orgLink}
+                    external
+                    styles="text-secondary font-bold"
+                    analyticsLabel={`navigation-${orgName}`}
+                  >
+                    <div className="flex gap-2">
+                      {orgName}
+                      <Click style={{ width: '16px', height: '16px' }} />
+                    </div>
+                  </Button>
+                ) : (
+                  <span className="text-secondary font-bold">{orgName}</span>
+                )}
               </div>
               <div className="flex items-center space-x-1">
                 <Clock />

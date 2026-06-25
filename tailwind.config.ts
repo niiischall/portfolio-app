@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./src/components/**/*.tsx', './src/sections/**/*.tsx'],
+  content: ['./index.html', './src/**/*.{tsx,ts}'],
   theme: {
     colors: {
       primary: 'rgb(52, 55, 60)',

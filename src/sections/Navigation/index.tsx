@@ -1,11 +1,12 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import type { TypedObject } from 'sanity';
-import { useLocation, Link, useNavigate } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 
 import { HeroSocialType, NavigationCollectionType } from '../../utils/helpers/types';
 import Button from '../../components/Button';
 import { urlForImage } from '../../lib/sanity.image';
-import { isExternalUrl, normalizePath } from '../../utils/helpers/routes';
+import { normalizePath } from '../../utils/helpers/routes';
+import { getLinkProps } from '../../utils/helpers/link-props';
 
 export interface NavigationProps {
   data: {
@@ -38,102 +39,133 @@ export interface NavigationProps {
   };
 }
 
+const MOBILE_MENU_ID = 'mobile-menu';
+
 const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
   const { collection = [] } = data ?? {};
-  const { cover = {} } = hero ?? {};
+  const { cover } = hero ?? {};
   const [menuShowcase, setMenuShowcase] = useState<boolean>(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const menuPanelRef = useRef<HTMLDivElement>(null);
+
+  const closeMobileMenu = useCallback(() => {
+    setMenuShowcase(false);
+  }, []);
 
   const toggleMobileMenuShow = useCallback(() => {
     setMenuShowcase((prevMenuShowcase) => !prevMenuShowcase);
   }, []);
 
   const location = useLocation();
-  const navigate = useNavigate();
   const currentPath = location.pathname;
 
-  const navigateToPath = useCallback(
-    (slug: string) => {
-      const path = normalizePath(slug);
-      if (isExternalUrl(path)) {
-        window.location.href = path;
-      } else {
-        navigate(path);
-      }
-    },
-    [navigate],
-  );
+  useEffect(() => {
+    closeMobileMenu();
+  }, [location.pathname, closeMobileMenu]);
 
-  const navigateFromMobileMenu = useCallback(
-    (slug: string) => {
-      navigateToPath(slug);
-      setMenuShowcase(false);
-    },
-    [navigateToPath],
-  );
+  useEffect(() => {
+    if (!menuShowcase) return;
+
+    const menuPanel = menuPanelRef.current;
+    if (!menuPanel) return;
+
+    const focusableSelector =
+      'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
+    const focusableElements = Array.from(menuPanel.querySelectorAll<HTMLElement>(focusableSelector)).filter(
+      (element) => !element.hasAttribute('disabled'),
+    );
+
+    const firstFocusable = focusableElements[0];
+    const lastFocusable = focusableElements[focusableElements.length - 1];
+
+    firstFocusable?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeMobileMenu();
+        menuButtonRef.current?.focus();
+        return;
+      }
+
+      if (event.key !== 'Tab' || focusableElements.length === 0) return;
+
+      if (event.shiftKey) {
+        if (document.activeElement === firstFocusable) {
+          event.preventDefault();
+          lastFocusable?.focus();
+        }
+        return;
+      }
+
+      if (document.activeElement === lastFocusable) {
+        event.preventDefault();
+        firstFocusable?.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [menuShowcase, closeMobileMenu]);
 
   const renderMobileNavigationItems = useCallback(() => {
-    let renderedList = null;
-    if (collection.length > 0) {
-      renderedList = collection.map((navItem: NavigationCollectionType) => {
-        const isCurrentLocation = currentPath === normalizePath(navItem.slug.current);
-        return (
-          <li key={navItem._key}>
+    if (collection.length === 0) return null;
+
+    return collection.map((navItem: NavigationCollectionType) => {
+      const isCurrentLocation = currentPath === normalizePath(navItem.slug.current);
+      const linkProps = getLinkProps(navItem.slug.current);
+
+      return (
+        <li key={navItem._key}>
+          <Button
+            {...linkProps}
+            styles={`text-2xl font-sans font-bold px-4 text-primary hover:text-secondary duration-200 ${
+              isCurrentLocation ? 'text-secondary' : 'text-primary'
+            }`}
+            onClick={closeMobileMenu}
+            analyticsLabel={`navigation-${navItem.slug.current}`}
+          >
+            {navItem.title}
+          </Button>
+        </li>
+      );
+    });
+  }, [closeMobileMenu, collection, currentPath]);
+
+  const renderNavigationItems = useCallback(() => {
+    if (collection.length === 0) return null;
+
+    return collection.map((navItem: NavigationCollectionType) => {
+      const isCurrentLocation = currentPath === normalizePath(navItem.slug.current);
+      const linkProps = getLinkProps(navItem.slug.current);
+
+      return (
+        <li key={navItem._key}>
+          <div className="flex flex-col items-center">
             <Button
-              styles={`text-2xl font-sans font-bold px-4 text-primary hover:text-secondary duration-200 ${
+              {...linkProps}
+              styles={`text-xl font-sans font-bold px-4 duration-200 text-primary hover:text-secondary ${
                 isCurrentLocation ? 'text-secondary' : 'text-primary'
               }`}
-              onClick={() => navigateFromMobileMenu(navItem?.slug.current)}
-              analyticsLabel={`navigation-${navItem?.slug.current}`}
+              analyticsLabel={`navigation-${navItem.slug.current}`}
             >
               {navItem.title}
             </Button>
-          </li>
-        );
-      });
-    }
-    return renderedList;
-  }, [currentPath, collection, navigateFromMobileMenu]);
+          </div>
+        </li>
+      );
+    });
+  }, [collection, currentPath]);
 
-  const renderNavigationItems = useCallback(() => {
-    let renderedList = null;
-    if (collection.length > 0) {
-      renderedList = collection.map((navItem: NavigationCollectionType) => {
-        const isCurrentLocation = currentPath === normalizePath(navItem.slug.current);
-        return (
-          <li key={navItem._key}>
-            <div className="flex flex-col items-center">
-              <Button
-                styles={`text-xl font-sans font-bold px-4 duration-200 text-primary hover:text-secondary ${
-                  isCurrentLocation ? 'text-secondary' : 'text-primary'
-                }`}
-                onClick={() => navigateToPath(navItem?.slug.current)}
-                analyticsLabel={`navigation-${navItem?.slug.current}`}
-              >
-                {navItem.title}
-              </Button>
-            </div>
-          </li>
-        );
-      });
-    }
-    return renderedList;
-  }, [currentPath, collection, navigateToPath]);
-
-  const profileImageUrl = cover?.asset?._ref
-    ? urlForImage(cover)?.width(128).height(128).url()
-    : undefined;
+  const profileImageUrl = cover?.asset?._ref ? urlForImage(cover)?.width(128).height(128).url() : undefined;
 
   return (
     <header className="relative flex justify-between items-center p-0 px-4 py-8 md:px-8 md:py-12">
-      <nav className="flex items-center w-full justify-evenly">
+      <nav className="flex items-center w-full justify-evenly" aria-label="Main navigation">
         {profileImageUrl ? (
           <div className="hidden md:flex w-20 h-20 shrink-0">
             <Link to="/">
-              <img
-                className="w-full h-full object-cover rounded-full"
-                src={profileImageUrl}
-                alt="Profile"
-              />
+              <img className="w-full h-full object-cover rounded-full" src={profileImageUrl} alt="Profile" />
             </Link>
           </div>
         ) : null}
@@ -142,18 +174,19 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
           {profileImageUrl ? (
             <div className="flex w-14 h-14 shrink-0">
               <Link to="/">
-                <img
-                  className="w-full h-full object-cover rounded-full"
-                  src={profileImageUrl}
-                  alt="Profile"
-                />
+                <img className="w-full h-full object-cover rounded-full" src={profileImageUrl} alt="Profile" />
               </Link>
             </div>
           ) : null}
           <Button
+            ref={menuButtonRef}
             styles={`hamburger z-50 block md:hidden focus:outline-none ${menuShowcase ? 'open' : ''}`}
             onClick={toggleMobileMenuShow}
             analyticsLabel="navigation-mobile"
+            ariaLabel={menuShowcase ? 'Close menu' : 'Open menu'}
+            ariaExpanded={menuShowcase}
+            ariaControls={MOBILE_MENU_ID}
+            type="button"
           >
             <span className="hamburger-top"></span>
             <span className="hamburger-middle"></span>
@@ -162,7 +195,14 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
         </div>
       </nav>
       {menuShowcase ? (
-        <div id="menu-banner" className="z-40 absolute top-0 left-0 space-y-4 bg-light w-full h-screen">
+        <div
+          id={MOBILE_MENU_ID}
+          ref={menuPanelRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Mobile navigation"
+          className="z-40 absolute top-0 left-0 space-y-4 bg-light w-full h-screen"
+        >
           <ul className="flex flex-col w-full h-full space-y-8 justify-center items-center">
             {renderMobileNavigationItems()}
           </ul>

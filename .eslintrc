@@ -30,5 +30,13 @@
       }
     ],
     "react/react-in-jsx-scope": "off"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["src/sanity/**/*.ts", "src/sanity/**/*.tsx", "sanity.config.ts"],
+      "rules": {
+        "import/named": "off"
+      }
+    }
+  ]
 }

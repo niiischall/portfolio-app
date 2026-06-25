@@ -6,8 +6,7 @@ import type { HeroSocialType } from '../../utils/helpers/types';
 import type { TypedObject } from 'sanity';
 import Button from '../../components/Button';
 import Click from '../../utils/svgs/Click';
-import { isExternalUrl, normalizePath } from '../../utils/helpers/routes';
-import { useNavigate } from 'react-router-dom';
+import { getLinkProps } from '../../utils/helpers/link-props';
 
 export interface HeroProps {
   data: {
@@ -32,11 +31,11 @@ export interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = ({ data }) => {
-  const navigate = useNavigate();
   const { socials = [], greeting } = data ?? {};
   const { link, text: greetingText = [] } = greeting ?? {};
   const { text: buttonText = '', slug } = link ?? {};
   const { current: buttonSlug = '' } = slug ?? {};
+  const ctaLinkProps = buttonSlug ? getLinkProps(buttonSlug) : null;
 
   return (
     <section
@@ -49,32 +48,21 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
             return (
               <Button
                 key={social._key}
+                href={social.url}
+                external
                 styles="mb-6 w-[40px] flex justify-center md:w-12"
-                onClick={() => {
-                  window.open(social.url, '_blank');
-                }}
                 analyticsLabel={`hero-social--${social.url}`}
+                ariaLabel={social.alt}
               >
-                <img src={urlForImage(social.cover)?.width(24).url()} alt={social.alt} />
+                <img src={urlForImage(social.cover)?.width(24).url()} alt="" aria-hidden="true" />
               </Button>
             );
           })}
         </div>
         <div className="max-w-lg pl-12 md:pl-0 lg:max-w-lg">
           <PortableText value={greetingText} />
-          {buttonText ? (
-            <Button
-              styles="btn mt-8 lowercase"
-              onClick={() => {
-                const path = normalizePath(buttonSlug);
-                if (isExternalUrl(path)) {
-                  window.location.href = path;
-                } else {
-                  navigate(path);
-                }
-              }}
-              analyticsLabel={`hero-${buttonSlug}`}
-            >
+          {buttonText && ctaLinkProps ? (
+            <Button {...ctaLinkProps} styles="btn mt-8 lowercase" analyticsLabel={`hero-${buttonSlug}`}>
               <div className="flex gap-1">
                 {buttonText}
                 <Click style={{ width: '16px', height: '16px' }} />

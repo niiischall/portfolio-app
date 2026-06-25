@@ -32,24 +32,38 @@ const Talks: React.FC<TalksProps> = ({ data }) => {
             const { url = '' } = link ?? {};
             return (
               <div key={_key} className="w-full py-2">
-                <Button onClick={() => window.open(url, '_blank')} styles="group" analyticsLabel={`talks-${heading}`}>
-                  <div className="mb-12 w-auto overflow-hidden flex flex-col justify-start items-start">
-                    <img
-                      className="rounded-md shadow-xl"
-                      src={urlForImage(cover)?.height(350).width(450).url()}
-                      alt={heading}
-                    />
-                  </div>
-                  <div>
-                    <div className="flex gap-2">
-                      <h3 className="text-2xl font-sans font-bold mb-4 group-hover:text-secondary text-left">
-                        {heading}
-                      </h3>
-                      <Click style={{ width: '18px', height: '18px' }} />
+                {url ? (
+                  <Button href={url} external styles="group" analyticsLabel={`talks-${heading}`}>
+                    <div className="mb-12 w-auto overflow-hidden flex flex-col justify-start items-start">
+                      <img
+                        className="rounded-md shadow-xl"
+                        src={urlForImage(cover)?.height(350).width(450).url()}
+                        alt={heading}
+                      />
                     </div>
-                    <p className="text-md mb-4 group-hover:text-secondary text-left max-w-2xl">{body}</p>
+                    <div>
+                      <div className="flex gap-2">
+                        <h3 className="text-2xl font-sans font-bold mb-4 group-hover:text-secondary text-left">
+                          {heading}
+                        </h3>
+                        <Click style={{ width: '18px', height: '18px' }} />
+                      </div>
+                      <p className="text-md mb-4 group-hover:text-secondary text-left max-w-2xl">{body}</p>
+                    </div>
+                  </Button>
+                ) : (
+                  <div>
+                    <div className="mb-12 w-auto overflow-hidden flex flex-col justify-start items-start">
+                      <img
+                        className="rounded-md shadow-xl"
+                        src={urlForImage(cover)?.height(350).width(450).url()}
+                        alt={heading}
+                      />
+                    </div>
+                    <h3 className="text-2xl font-sans font-bold mb-4 text-left">{heading}</h3>
+                    <p className="text-md mb-4 text-left max-w-2xl">{body}</p>
                   </div>
-                </Button>
+                )}
               </div>
             );
           })}
