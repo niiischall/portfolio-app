@@ -71,6 +71,21 @@ const blocksToPlainText = (blocks) => {
     .trim();
 };
 
+const renderBlocksHtml = (blocks) => {
+  if (!Array.isArray(blocks)) return '';
+  return blocks
+    .map((block) => {
+      const text = Array.isArray(block?.children)
+        ? block.children.map((child) => child?.text ?? '').join('')
+        : '';
+      if (!text) return '';
+      const style = block?.style || 'normal';
+      const tag = style === 'h1' || style === 'h2' ? 'h1' : style === 'h3' ? 'h2' : 'p';
+      return `<${tag}>${escapeHtml(text)}</${tag}>`;
+    })
+    .join('');
+};
+
 const escapeHtml = (value) =>
   String(value ?? '')
     .replaceAll('&', '&amp;')
@@ -84,7 +99,7 @@ const listItems = (items, renderItem) =>
 const renderRouteSnapshot = (route, data) => {
   switch (route) {
     case '/':
-      return `<main id="main-content"><h1>${escapeHtml(blocksToPlainText(data.hero?.greeting?.text))}</h1></main>`;
+      return `<main id="main-content">${renderBlocksHtml(data.hero?.greeting?.text)}</main>`;
     case '/about':
       return `<main id="main-content"><h1>${escapeHtml(
         blocksToPlainText(data.about?.heading?.title),
@@ -179,7 +194,14 @@ const fetchSanityData = async () => {
 const writeRouteHtml = (baseHtml, route, snapshot) => {
   const meta = ROUTE_META[route];
   let html = applyRouteMeta(baseHtml, route, meta);
-  html = html.replace('<div id="root"></div>', `<div id="root">${snapshot}</div>`);
+
+  // Keep #root empty for visitors; crawlable HTML lives in a visually hidden sibling.
+  html = html.replace(/<div id="ssg-fallback"[^>]*>[\s\S]*?<\/div>\s*/g, '');
+  html = html.replace(/<div id="root">[\s\S]*?<\/div>/, '<div id="root"></div>');
+  html = html.replace(
+    '<div id="root"></div>',
+    `<div id="ssg-fallback" aria-hidden="true" class="ssg-fallback">${snapshot}</div>\n  <div id="root"></div>`,
+  );
 
   const outDir = route === '/' ? distDir : path.join(distDir, route.slice(1));
   fs.mkdirSync(outDir, { recursive: true });
