@@ -22,13 +22,13 @@
     @apply px-[6%] pt-[8%] bg-light md:px-[10%] md:py-[2%];
   }
   h1 {
-    @apply text-6xl font-ovo font-bold;
+    @apply text-6xl font-ovo font-bold text-left;
   }
   h2 {
-    @apply text-4xl font-ovo font-bold;
+    @apply text-4xl font-ovo font-bold text-left;
   }
   h3 {
-    @apply text-xl font-ovo font-bold;
+    @apply text-xl font-ovo font-bold text-left;
   }
   p {
     @apply text-base font-ovo;
@@ -87,33 +87,50 @@
   }
   .btn:hover .external-link-icon,
   .btn:active .external-link-icon,
-  .btn.is-pressed .external-link-icon,
-  a.external-link:hover .external-link-icon,
-  a.external-link:active .external-link-icon {
+  .btn.is-pressed .external-link-icon {
     color: rgb(238, 234, 227);
   }
   a.external-link {
     transition:
       background-color 160ms ease-out,
-      color 160ms ease-out;
+      color 160ms ease-out,
+      opacity 160ms ease-out,
+      transform 160ms ease-out;
   }
-  a.external-link:not(.btn):hover,
-  a.external-link:not(.btn):active {
-    @apply bg-secondary text-light;
+  a.external-link.icon-link {
+    @apply inline-flex items-center justify-center;
+    background: transparent;
+    box-shadow: none;
+    border: none;
   }
-  a.external-link.group h3,
-  a.external-link.group p {
+  a.external-link.icon-link:hover,
+  a.external-link.icon-link:active {
+    @apply opacity-75;
+    background: transparent;
+    transform: scale(1.05);
+  }
+  a.external-link.icon-link:focus-visible {
+    outline: 2px solid rgb(186, 38, 92);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  a.external-link.text-link:hover,
+  a.external-link.text-link:active {
+    @apply text-primary;
+  }
+  a.external-link.group {
+    @apply block;
+  }
+  a.external-link.group h3 {
     transition: color 160ms ease-out;
   }
   a.external-link.group:hover h3,
-  a.external-link.group:hover p,
-  a.external-link.group:active h3,
-  a.external-link.group:active p {
-    @apply text-light;
+  a.external-link.group:active h3 {
+    @apply text-secondary;
   }
-  a.external-link.group:hover,
-  a.external-link.group:active {
-    @apply bg-secondary;
+  a.external-link.group:hover .external-link-icon,
+  a.external-link.group:active .external-link-icon {
+    color: rgb(186, 38, 92);
   }
   a.external-link:focus-visible {
     outline: 2px solid rgb(186, 38, 92);
@@ -143,45 +160,49 @@
   cursor: pointer;
   width: 24px;
   height: 24px;
-  transition: all 0.25s;
   position: relative;
+  flex-shrink: 0;
 }
 
 .hamburger-top,
 .hamburger-middle,
 .hamburger-bottom {
   position: absolute;
+  left: 0;
   width: 24px;
   height: 2px;
-  top: 0;
-  left: 0;
   background-color: rgb(186, 38, 92);
-  transform: rotate(0);
-  transition: all 0.5s;
+  transform-origin: center;
+  transition:
+    transform 0.25s ease,
+    top 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.hamburger-top {
+  top: 2px;
 }
 
 .hamburger-middle {
-  transform: translateY(7px);
+  top: 11px;
 }
 
 .hamburger-bottom {
-  transform: translateY(14px);
-}
-
-.open {
-  transform: rotate(90deg);
+  top: 20px;
 }
 
 .open .hamburger-top {
-  transform: rotate(45deg) translateY(6px) translateX(6px);
+  top: 11px;
+  transform: rotate(45deg);
 }
 
 .open .hamburger-middle {
-  display: none;
+  opacity: 0;
 }
 
 .open .hamburger-bottom {
-  transform: rotate(-45deg) translateY(6px) translateX(-6px);
+  top: 11px;
+  transform: rotate(-45deg);
 }
 
 /* Visually hidden until keyboard focus - plain CSS so Tailwind purge cannot strip it */
@@ -243,7 +264,7 @@
   .btn-press,
   a.external-link,
   a.external-link.group h3,
-  a.external-link.group p,
+  a.external-link.icon-link,
   .external-link-icon {
     transition: none;
   }
@@ -263,6 +284,12 @@
       3px 3px 0 0 rgb(52, 55, 60),
       4px 4px 0 0 rgb(52, 55, 60),
       5px 5px 0 0 rgb(52, 55, 60);
+  }
+
+  .hamburger-top,
+  .hamburger-middle,
+  .hamburger-bottom {
+    transition: none;
   }
 
   .animate-page-enter {

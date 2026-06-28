@@ -2,7 +2,6 @@ import React, { useCallback, useState } from 'react';
 import { PortableText } from '@portabletext/react';
 import { useNavigate } from 'react-router-dom';
 
-import { urlForImage } from '../../lib/sanity.image';
 import type { HeroSocialType } from '../../utils/helpers/types';
 import type { TypedObject } from 'sanity';
 import Button from '../../components/Button';
@@ -34,7 +33,7 @@ export interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = ({ data }) => {
-  const { socials = [], greeting } = data ?? {};
+  const { greeting } = data ?? {};
   const { link, text: greetingText = [] } = greeting ?? {};
   const { text: buttonText = '', slug } = link ?? {};
   const { current: buttonSlug = '' } = slug ?? {};
@@ -67,30 +66,13 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
 
   return (
     <section
-      className="bg-light relative w-full md:mx-auto px-4 pt-6 pb-12 flex-1 md:px-8 md:pt-12 md:pb-48 "
+      className="bg-light relative w-full md:mx-auto px-4 pt-4 pb-12 flex-1 md:px-8 md:pt-12 md:pb-48"
       id="home"
     >
-      <div className="max-w-4xl flex flex-col items-start justify-start md:flex-row md:items-start md:space-x-6 lg:space-x-12 md:mx-auto">
-        <div className="flex flex-col absolute top-15 left-4 md:relative md:top-auto md:left-auto">
-          {socials.map((social: HeroSocialType) => {
-            return (
-              <Button
-                key={social._key}
-                href={social.url}
-                external
-                styles="mb-6 min-w-[44px] min-h-[44px] flex items-center justify-center md:w-12"
-                analyticsEvent={ANALYTICS_EVENTS.EXTERNAL_CLICK}
-                analyticsProperties={{ section: 'hero', surface: 'social', url: social.url }}
-                ariaLabel={social.alt}
-              >
-                <img src={urlForImage(social.cover)?.width(24).url()} alt="" aria-hidden="true" />
-              </Button>
-            );
-          })}
-        </div>
-        <div className="max-w-lg pl-12 md:pl-0 lg:max-w-lg">
+      <div className="max-w-4xl md:mx-auto">
+        <div className="max-w-lg w-full min-w-0 lg:max-w-lg">
           <PortableText value={greetingText} components={heroPortableTextComponents} />
-          <div className="flex flex-row flex-wrap items-center gap-4 mt-8 w-full">
+          <div className="flex flex-col gap-3 mt-6 w-full md:flex-row md:flex-wrap md:items-center md:gap-4 md:mt-8">
             {buttonText && ctaLinkProps ? (
               <Button
                 {...ctaLinkProps}

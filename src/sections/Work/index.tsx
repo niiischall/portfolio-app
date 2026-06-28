@@ -49,7 +49,7 @@ const Work: React.FC<WorkProps> = ({ data }) => {
                   <Button
                     href={orgLink}
                     external
-                    styles="text-secondary font-bold rounded-sm px-1 -mx-1 transition-colors"
+                    styles="text-link text-secondary font-bold rounded-sm px-1 -mx-1 transition-colors"
                     analyticsEvent={ANALYTICS_EVENTS.EXTERNAL_CLICK}
                     analyticsProperties={{ section: 'work', label: orgName, url: orgLink }}
                   >

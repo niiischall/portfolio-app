@@ -73,7 +73,7 @@ const PortfolioLayout = () => {
           <Route path="/contact" Component={() => <Contact data={data?.contact} />} />
         </Routes>
       </main>
-      <Footer data={data?.footer} />
+      <Footer data={data?.footer} navigation={data?.navigation} heroSocials={data?.hero?.socials} />
     </div>
   );
 };

@@ -36,7 +36,7 @@ const About: React.FC<AboutProps> = ({ data }) => {
       id="about"
     >
       <div className="max-w-4xl flex flex-col justify-center items-start space-y-12 space-x-0 md:mx-auto">
-        <div className="text-3xl px-0 text-left md:text-center">
+        <div className="text-3xl px-0 text-left">
           <PortableText value={headingTitle} />
         </div>
         <div className="md:max-w-xl">

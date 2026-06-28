@@ -191,7 +191,9 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
           ) : null}
           <Button
             ref={menuButtonRef}
-            styles={`hamburger z-50 block md:hidden focus:outline-none p-3 min-w-[44px] min-h-[44px] ${menuShowcase ? 'open' : ''}`}
+            styles={`hamburger z-[60] flex items-center justify-center md:hidden focus:outline-none p-3 min-w-[44px] min-h-[44px] ${
+              menuShowcase ? 'open' : ''
+            }`}
             onClick={toggleMobileMenuShow}
             analyticsEvent={ANALYTICS_EVENTS.MENU_TOGGLE}
             analyticsProperties={{
@@ -216,7 +218,7 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
           role="dialog"
           aria-modal="true"
           aria-label="Mobile navigation"
-          className="z-40 absolute top-0 left-0 space-y-4 bg-light w-full h-screen"
+          className="z-50 fixed inset-0 bg-light"
         >
           <ul className="flex flex-col w-full h-full space-y-8 justify-center items-center">
             {renderMobileNavigationItems()}
