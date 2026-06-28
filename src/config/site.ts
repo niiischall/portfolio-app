@@ -1,5 +1,9 @@
 export const SITE_URL = import.meta.env.VITE_SITE_URL ?? 'https://www.nischalnikit.xyz';
 
+export const PERSON_NAME = 'Nischal Nikit';
+
+export const SITE_NAME = 'Nischal Nikit';
+
 export const SITE_TITLE = 'hey! i am nischal! 👋';
 
 export const SITE_DESCRIPTION =

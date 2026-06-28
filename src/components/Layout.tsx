@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 
 import Navigation from '../sections/Navigation';
 import Hero from '../sections/Hero';
@@ -11,8 +11,11 @@ import Contact from '../sections/Contact';
 import Talks from '../sections/Talks';
 import Footer from '../sections/Footer';
 import PageSkeleton from './PageSkeleton';
+import PageMeta from './PageMeta';
+import StructuredData from './StructuredData';
 
 import { useSanityData } from '../lib/sanity-client';
+import { getRouteMeta } from '../config/route-meta';
 
 const StudioPage = lazy(() => import('../sanity/Studio'));
 
@@ -23,15 +26,24 @@ const StudioFallback = () => (
 );
 
 const PortfolioLayout = () => {
+  const { pathname } = useLocation();
   const { data, isLoading, isError } = useSanityData();
+  const routeMeta = getRouteMeta(pathname);
 
   if (isLoading) {
-    return <PageSkeleton />;
+    return (
+      <>
+        <PageMeta meta={routeMeta} pathname={pathname} />
+        <PageSkeleton />
+      </>
+    );
   }
 
   if (isError) {
     return (
-      <div className="min-h-screen flex flex-col bg-light">
+      <>
+        <PageMeta meta={routeMeta} pathname={pathname} />
+        <div className="min-h-screen flex flex-col bg-light">
         <main
           id="main-content"
           className="flex-1 flex items-center justify-center px-4 text-center"
@@ -40,12 +52,15 @@ const PortfolioLayout = () => {
             Something went wrong while loading the site. Please refresh and try again.
           </p>
         </main>
-      </div>
+        </div>
+      </>
     );
   }
 
   return (
     <div className="min-h-screen flex flex-col">
+      <PageMeta meta={routeMeta} pathname={pathname} />
+      <StructuredData email={data?.footer?.email} writings={data?.writings?.collection} />
       <Navigation data={data?.navigation} hero={data?.hero} />
       <main id="main-content" className="flex-1 flex flex-col bg-light">
         <Routes>
@@ -64,8 +79,14 @@ const PortfolioLayout = () => {
 };
 
 export const Layout = () => {
+  const { pathname } = useLocation();
+  const isStudio = pathname.startsWith('/studio');
+  const routeMeta = getRouteMeta(pathname);
+
   return (
-    <Routes>
+    <>
+      {isStudio ? <PageMeta meta={routeMeta} pathname={pathname} noIndex /> : null}
+      <Routes>
       <Route
         path="/studio/*"
         element={
@@ -75,7 +96,8 @@ export const Layout = () => {
         }
       />
       <Route path="/*" element={<PortfolioLayout />} />
-    </Routes>
+      </Routes>
+    </>
   );
 };
 

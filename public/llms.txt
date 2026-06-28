@@ -1,0 +1,31 @@
+# Nischal Nikit
+
+> Personal portfolio of Nischal Nikit - software engineer building for the web. Essays, talks, experiments, and work history.
+
+## About
+
+Nischal Nikit builds things that live on the web. This site is his corner of the internet: work experience, side projects, technical writing, and talks.
+
+- Site: https://www.nischalnikit.xyz
+- Blog: https://blog.nischalnikit.xyz
+- GitHub: https://github.com/niiischall
+- LinkedIn: https://www.linkedin.com/in/niiischall
+
+## Pages
+
+- [Home](https://www.nischalnikit.xyz/): Introduction and social links
+- [About](https://www.nischalnikit.xyz/about): Background and overview
+- [Work](https://www.nischalnikit.xyz/work): Professional experience and roles
+- [Experiments](https://www.nischalnikit.xyz/experiments): Side projects and prototypes
+- [Blogs](https://www.nischalnikit.xyz/writings): Technical essays (links to full posts on the blog)
+- [Talks](https://www.nischalnikit.xyz/talks): Conference talks and presentations
+- [Contact](https://www.nischalnikit.xyz/contact): How to get in touch
+
+## Writing
+
+Full articles are published at https://blog.nischalnikit.xyz. The portfolio writings page highlights selected posts with summaries and links.
+
+## Optional
+
+- [Sitemap](https://www.nischalnikit.xyz/sitemap.xml)
+- [Robots](https://www.nischalnikit.xyz/robots.txt)
