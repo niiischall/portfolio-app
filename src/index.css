@@ -37,7 +37,99 @@
     @apply text-base font-ovo;
   }
   .btn {
-    @apply inline-block relative shadow-btn mt-4 cursor-pointer text-base border-[3px] px-2 py-2 border-solid font-sans text-primary uppercase tracking-wide hover:text-primary hover:bg-secondary;
+    @apply inline-block relative mt-4 cursor-pointer text-base border-[3px] px-3 py-2.5 border-solid border-primary font-sans text-primary lowercase tracking-wide;
+    box-shadow:
+      1px 1px 0 0 rgb(52, 55, 60),
+      2px 2px 0 0 rgb(52, 55, 60),
+      3px 3px 0 0 rgb(52, 55, 60),
+      4px 4px 0 0 rgb(52, 55, 60),
+      5px 5px 0 0 rgb(52, 55, 60);
+    transition:
+      transform 160ms ease-out,
+      box-shadow 160ms ease-out,
+      background-color 160ms ease-out,
+      color 160ms ease-out,
+      border-color 160ms ease-out;
+  }
+  .btn:hover {
+    @apply bg-secondary text-light border-primary;
+    transform: translate(-2px, -2px);
+    box-shadow:
+      1px 1px 0 0 rgb(52, 55, 60),
+      2px 2px 0 0 rgb(52, 55, 60),
+      3px 3px 0 0 rgb(52, 55, 60),
+      4px 4px 0 0 rgb(52, 55, 60),
+      5px 5px 0 0 rgb(52, 55, 60),
+      6px 6px 0 0 rgb(52, 55, 60),
+      7px 7px 0 0 rgb(52, 55, 60);
+  }
+  .btn:active,
+  .btn.is-pressed {
+    @apply bg-secondary text-light border-primary;
+    transform: translate(3px, 3px);
+    box-shadow: 1px 1px 0 0 rgb(52, 55, 60);
+  }
+  .btn:focus-visible {
+    outline: 2px solid rgb(186, 38, 92);
+    outline-offset: 3px;
+  }
+  .btn span {
+    @apply font-sans tracking-wide;
+    color: inherit;
+    font-size: inherit;
+  }
+  .external-link-icon {
+    color: rgb(186, 38, 92);
+    transition: color 160ms ease-out;
+  }
+  .btn .external-link-icon {
+    color: rgb(186, 38, 92);
+  }
+  .btn:hover .external-link-icon,
+  .btn:active .external-link-icon,
+  .btn.is-pressed .external-link-icon,
+  a.external-link:hover .external-link-icon,
+  a.external-link:active .external-link-icon {
+    color: rgb(238, 234, 227);
+  }
+  a.external-link {
+    transition:
+      background-color 160ms ease-out,
+      color 160ms ease-out;
+  }
+  a.external-link:not(.btn):hover,
+  a.external-link:not(.btn):active {
+    @apply bg-secondary text-light;
+  }
+  a.external-link.group h3,
+  a.external-link.group p {
+    transition: color 160ms ease-out;
+  }
+  a.external-link.group:hover h3,
+  a.external-link.group:hover p,
+  a.external-link.group:active h3,
+  a.external-link.group:active p {
+    @apply text-light;
+  }
+  a.external-link.group:hover,
+  a.external-link.group:active {
+    @apply bg-secondary;
+  }
+  a.external-link:focus-visible {
+    outline: 2px solid rgb(186, 38, 92);
+    outline-offset: 3px;
+  }
+  .btn-press {
+    transition:
+      transform 160ms ease-out,
+      box-shadow 160ms ease-out,
+      background-color 160ms ease-out,
+      color 160ms ease-out;
+  }
+  .btn-press.is-pressed,
+  .btn-press:active {
+    transform: translate(3px, 3px);
+    box-shadow: 1px 1px 0 0 rgb(52, 55, 60);
   }
   .divider {
     @apply w-[25%] h-[1px] mx-auto bg-primary;
@@ -129,4 +221,51 @@
     rgba(15, 15, 15, 0.1) 0px 2px 4px;
   outline: 2px solid rgb(186, 38, 92);
   outline-offset: 2px;
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-page-enter {
+  animation: page-enter 0.45s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .btn-press,
+  a.external-link,
+  a.external-link.group h3,
+  a.external-link.group p,
+  .external-link-icon {
+    transition: none;
+  }
+
+  .btn:hover {
+    transform: none;
+  }
+
+  .btn-press.is-pressed,
+  .btn-press:active,
+  .btn:active,
+  .btn.is-pressed {
+    transform: none;
+    box-shadow:
+      1px 1px 0 0 rgb(52, 55, 60),
+      2px 2px 0 0 rgb(52, 55, 60),
+      3px 3px 0 0 rgb(52, 55, 60),
+      4px 4px 0 0 rgb(52, 55, 60),
+      5px 5px 0 0 rgb(52, 55, 60);
+  }
+
+  .animate-page-enter {
+    animation: none;
+  }
 }

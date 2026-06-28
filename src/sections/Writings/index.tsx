@@ -6,6 +6,7 @@ import { WritingsCollectionType } from '../../utils/helpers/types';
 import type { TypedObject } from 'sanity';
 import Button from '../../components/Button';
 import Click from '../../utils/svgs/Click';
+import { ANALYTICS_EVENTS } from '../../utils/helpers/analytics';
 
 export interface WritingsProps {
   data: {
@@ -32,18 +33,22 @@ const Writings: React.FC<WritingsProps> = ({ data }) => {
             return (
               <div key={_key} className="max-w-lg shadow-box overflow-hidden rounded-lg">
                 {link ? (
-                  <Button styles="group" href={link} external analyticsLabel={`writings-${heading}`}>
+                  <Button
+                    styles="group"
+                    href={link}
+                    external
+                    analyticsEvent={ANALYTICS_EVENTS.EXTERNAL_CLICK}
+                    analyticsProperties={{ section: 'writings', label: heading, url: link }}
+                  >
                     <div className="mb-6 shadow-box">
                       <img src={urlForImage(image)?.url()} alt={heading} loading="lazy" />
                     </div>
                     <div className="px-4 flex justify-end">
-                      <Click style={{ width: '18px', height: '18px' }} />
+                      <Click style={{ width: '18px', height: '18px' }} aria-hidden="true" />
                     </div>
                     <div className="px-4 py-2">
-                      <h3 className="text-xl font-sans font-bold mb-4 group-hover:text-secondary text-left">
-                        {heading}
-                      </h3>
-                      <p className="text-sm mb-4 group-hover:text-secondary text-left">{body}</p>
+                      <h3 className="text-xl font-sans font-bold mb-4 text-left">{heading}</h3>
+                      <p className="text-sm mb-4 text-left">{body}</p>
                     </div>
                   </Button>
                 ) : (

@@ -2,6 +2,9 @@ import React from 'react';
 import { PortableText } from '@portabletext/react';
 
 import type { TypedObject } from 'sanity';
+import Button from '../../components/Button';
+import Click from '../../utils/svgs/Click';
+import { ANALYTICS_EVENTS } from '../../utils/helpers/analytics';
 
 export interface ContactProps {
   data: {
@@ -34,13 +37,22 @@ const Contact: React.FC<ContactProps> = ({ data }) => {
         <PortableText value={text} />
       </div>
       {href && linkText ? (
-        <a
+        <Button
           href={href}
-          className="btn mt-8 lowercase inline-flex items-center gap-1 font-sans text-primary"
-          {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+          external={isExternal}
+          styles="btn mt-8 lowercase inline-flex items-center gap-1 font-sans text-primary"
+          analyticsEvent={isExternal ? ANALYTICS_EVENTS.EXTERNAL_CLICK : ANALYTICS_EVENTS.CTA_CLICK}
+          analyticsProperties={{
+            section: 'contact',
+            label: linkText,
+            destination: href,
+          }}
         >
-          {linkText}
-        </a>
+          <span className="flex items-center gap-1">
+            {linkText}
+            {isExternal ? <Click style={{ width: '16px', height: '16px' }} aria-hidden="true" /> : null}
+          </span>
+        </Button>
       ) : null}
     </section>
   );

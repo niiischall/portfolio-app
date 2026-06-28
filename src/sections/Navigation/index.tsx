@@ -7,6 +7,7 @@ import Button from '../../components/Button';
 import { urlForImage } from '../../lib/sanity.image';
 import { normalizePath } from '../../utils/helpers/routes';
 import { getLinkProps } from '../../utils/helpers/link-props';
+import { ANALYTICS_EVENTS } from '../../utils/helpers/analytics';
 
 export interface NavigationProps {
   data: {
@@ -123,7 +124,12 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
               isCurrentLocation ? 'text-secondary' : 'text-primary'
             }`}
             onClick={closeMobileMenu}
-            analyticsLabel={`navigation-${navItem.slug.current}`}
+            analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
+            analyticsProperties={{
+              surface: 'mobile_menu',
+              destination: normalizePath(navItem.slug.current),
+              label: navItem.title,
+            }}
           >
             {navItem.title}
           </Button>
@@ -147,7 +153,12 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
               styles={`text-xl font-sans font-bold px-4 duration-200 text-primary hover:text-secondary ${
                 isCurrentLocation ? 'text-secondary' : 'text-primary'
               }`}
-              analyticsLabel={`navigation-${navItem.slug.current}`}
+              analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
+              analyticsProperties={{
+                surface: 'header',
+                destination: normalizePath(navItem.slug.current),
+                label: navItem.title,
+              }}
             >
               {navItem.title}
             </Button>
@@ -180,9 +191,13 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
           ) : null}
           <Button
             ref={menuButtonRef}
-            styles={`hamburger z-50 block md:hidden focus:outline-none ${menuShowcase ? 'open' : ''}`}
+            styles={`hamburger z-50 block md:hidden focus:outline-none p-3 min-w-[44px] min-h-[44px] ${menuShowcase ? 'open' : ''}`}
             onClick={toggleMobileMenuShow}
-            analyticsLabel="navigation-mobile"
+            analyticsEvent={ANALYTICS_EVENTS.MENU_TOGGLE}
+            analyticsProperties={{
+              surface: 'mobile_menu',
+              action: menuShowcase ? 'close' : 'open',
+            }}
             ariaLabel={menuShowcase ? 'Close menu' : 'Open menu'}
             ariaExpanded={menuShowcase}
             ariaControls={MOBILE_MENU_ID}

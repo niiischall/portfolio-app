@@ -8,6 +8,7 @@ import { WorkCollectionType } from '../../utils/helpers/types';
 import type { TypedObject } from 'sanity';
 import Button from '../../components/Button';
 import Click from '../../utils/svgs/Click';
+import { ANALYTICS_EVENTS } from '../../utils/helpers/analytics';
 
 export interface WorkProps {
   data: {
@@ -48,12 +49,13 @@ const Work: React.FC<WorkProps> = ({ data }) => {
                   <Button
                     href={orgLink}
                     external
-                    styles="text-secondary font-bold"
-                    analyticsLabel={`navigation-${orgName}`}
+                    styles="text-secondary font-bold rounded-sm px-1 -mx-1 transition-colors"
+                    analyticsEvent={ANALYTICS_EVENTS.EXTERNAL_CLICK}
+                    analyticsProperties={{ section: 'work', label: orgName, url: orgLink }}
                   >
                     <div className="flex gap-2">
                       {orgName}
-                      <Click style={{ width: '16px', height: '16px' }} />
+                      <Click style={{ width: '16px', height: '16px' }} aria-hidden="true" />
                     </div>
                   </Button>
                 ) : (

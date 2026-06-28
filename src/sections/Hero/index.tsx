@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { PortableText } from '@portabletext/react';
+import { useNavigate } from 'react-router-dom';
 
 import { urlForImage } from '../../lib/sanity.image';
 import type { HeroSocialType } from '../../utils/helpers/types';
 import type { TypedObject } from 'sanity';
 import Button from '../../components/Button';
-import Click from '../../utils/svgs/Click';
 import { getLinkProps } from '../../utils/helpers/link-props';
+import { heroPortableTextComponents } from '../../components/portableText/hero';
+import { ANALYTICS_EVENTS } from '../../utils/helpers/analytics';
+import { normalizePath } from '../../utils/helpers/routes';
 
 export interface HeroProps {
   data: {
@@ -36,6 +39,31 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
   const { text: buttonText = '', slug } = link ?? {};
   const { current: buttonSlug = '' } = slug ?? {};
   const ctaLinkProps = buttonSlug ? getLinkProps(buttonSlug) : null;
+  const ctaDestination = buttonSlug ? normalizePath(buttonSlug) : '';
+  const showAboutCrossLink = ctaDestination !== '/about';
+  const heroBtnStyles = 'btn lowercase !mt-0';
+  const navigate = useNavigate();
+  const [aboutBtnPressed, setAboutBtnPressed] = useState(false);
+
+  const handleMoreAboutClick = useCallback(
+    (event: React.MouseEvent<HTMLElement>) => {
+      event.preventDefault();
+      if (aboutBtnPressed) return;
+
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reducedMotion) {
+        navigate('/about', { state: { pageEnter: true } });
+        return;
+      }
+
+      setAboutBtnPressed(true);
+      window.setTimeout(() => {
+        navigate('/about', { state: { pageEnter: true } });
+        setAboutBtnPressed(false);
+      }, 220);
+    },
+    [aboutBtnPressed, navigate],
+  );
 
   return (
     <section
@@ -50,8 +78,9 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
                 key={social._key}
                 href={social.url}
                 external
-                styles="mb-6 w-[40px] flex justify-center md:w-12"
-                analyticsLabel={`hero-social--${social.url}`}
+                styles="mb-6 min-w-[44px] min-h-[44px] flex items-center justify-center md:w-12"
+                analyticsEvent={ANALYTICS_EVENTS.EXTERNAL_CLICK}
+                analyticsProperties={{ section: 'hero', surface: 'social', url: social.url }}
                 ariaLabel={social.alt}
               >
                 <img src={urlForImage(social.cover)?.width(24).url()} alt="" aria-hidden="true" />
@@ -60,15 +89,39 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
           })}
         </div>
         <div className="max-w-lg pl-12 md:pl-0 lg:max-w-lg">
-          <PortableText value={greetingText} />
-          {buttonText && ctaLinkProps ? (
-            <Button {...ctaLinkProps} styles="btn mt-8 lowercase" analyticsLabel={`hero-${buttonSlug}`}>
-              <div className="flex gap-1">
+          <PortableText value={greetingText} components={heroPortableTextComponents} />
+          <div className="flex flex-row flex-wrap items-center gap-4 mt-8 w-full">
+            {buttonText && ctaLinkProps ? (
+              <Button
+                {...ctaLinkProps}
+                styles={heroBtnStyles}
+                analyticsEvent={ANALYTICS_EVENTS.CTA_CLICK}
+                analyticsProperties={{
+                  section: 'hero',
+                  label: buttonText,
+                  destination: normalizePath(buttonSlug),
+                }}
+              >
                 {buttonText}
-                <Click style={{ width: '16px', height: '16px' }} />
-              </div>
-            </Button>
-          ) : null}
+              </Button>
+            ) : null}
+            {showAboutCrossLink ? (
+              <Button
+                to="/about"
+                styles={`${heroBtnStyles} btn-press ${aboutBtnPressed ? 'is-pressed' : ''}`}
+                onClick={handleMoreAboutClick}
+                analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
+                analyticsProperties={{
+                  section: 'hero',
+                  surface: 'cross_link',
+                  destination: '/about',
+                  label: 'more about me',
+                }}
+              >
+                more about me
+              </Button>
+            ) : null}
+          </div>
         </div>
       </div>
     </section>

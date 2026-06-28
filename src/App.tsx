@@ -1,5 +1,5 @@
 import Layout from './components/Layout';
-import PostHogPageViewTracker from './utils/helpers/tracker';
+import PostHogPageViewTracker, { ScrollDepthTracker } from './utils/helpers/tracker';
 
 const App = () => {
   return (
@@ -8,6 +8,7 @@ const App = () => {
         Skip to content
       </a>
       <PostHogPageViewTracker />
+      <ScrollDepthTracker />
       <Layout />
     </div>
   );

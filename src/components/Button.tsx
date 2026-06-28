@@ -3,12 +3,15 @@ import { usePostHog } from 'posthog-js/react';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import type { AnalyticsEventName, AnalyticsProperties } from '../utils/helpers/analytics';
+import { trackEvent } from '../utils/helpers/analytics';
+
 export interface ButtonProps {
   children: React.ReactNode;
-  analyticsLabel: string;
-  analyticsData?: object;
+  analyticsEvent: AnalyticsEventName;
+  analyticsProperties?: AnalyticsProperties;
   styles?: string;
-  onClick?: () => void;
+  onClick?: (_event: React.MouseEvent<HTMLElement>) => void;
   href?: string;
   to?: string;
   external?: boolean;
@@ -21,12 +24,15 @@ export interface ButtonProps {
 const isExternalHref = (href: string) =>
   href.startsWith('http://') || href.startsWith('https://') || href.startsWith('mailto:') || href.startsWith('tel:');
 
+const mergeStyles = (styles: string | undefined, extra?: string) =>
+  [styles, extra].filter(Boolean).join(' ');
+
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   {
     onClick,
     styles,
-    analyticsLabel,
-    analyticsData,
+    analyticsEvent,
+    analyticsProperties,
     children,
     href,
     to,
@@ -41,17 +47,17 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   const posthog = usePostHog();
 
   const track = () => {
-    posthog?.capture(analyticsLabel, analyticsData);
+    trackEvent(posthog?.capture.bind(posthog), analyticsEvent, analyticsProperties);
   };
 
-  const handleButtonClick = () => {
+  const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     track();
-    onClick?.();
+    onClick?.(event);
   };
 
-  const handleLinkClick = () => {
+  const handleLinkClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
     track();
-    onClick?.();
+    onClick?.(event);
   };
 
   if (to) {
@@ -67,7 +73,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function Button(
     return (
       <a
         href={href}
-        className={styles}
+        className={mergeStyles(styles, opensNewTab ? 'external-link' : undefined)}
         onClick={handleLinkClick}
         aria-label={ariaLabel}
         {...(opensNewTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
