@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 
 import { HeroSocialType, NavigationCollectionType } from '../../utils/helpers/types';
 import Button from '../../components/Button';
+import ThemeToggle from '../../components/ThemeToggle';
 import { urlForImage } from '../../lib/sanity.image';
 import { normalizePath } from '../../utils/helpers/routes';
 import { getLinkProps } from '../../utils/helpers/link-props';
@@ -171,28 +172,11 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
   const profileImageUrl = cover?.asset?._ref ? urlForImage(cover)?.width(128).height(128).url() : undefined;
 
   return (
-    <header className="relative flex justify-between items-center p-0 px-4 py-8 md:px-8 md:py-12">
-      <nav className="flex items-center w-full justify-evenly" aria-label="Main navigation">
-        {profileImageUrl ? (
-          <div className="hidden md:flex w-20 h-20 shrink-0">
-            <Button
-              to="/"
-              styles="block w-full h-full rounded-full"
-              analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
-              analyticsProperties={{
-                surface: 'header',
-                destination: '/',
-                label: 'profile',
-              }}
-            >
-              <img className="w-full h-full object-cover rounded-full" src={profileImageUrl} alt="Profile" />
-            </Button>
-          </div>
-        ) : null}
-        <ul className="space-x-2 hidden md:flex">{renderNavigationItems()}</ul>
-        <div className="flex items-center w-full justify-between md:hidden">
-          {profileImageUrl ? (
-            <div className="flex w-14 h-14 shrink-0">
+    <header className="px-4 py-8 md:px-8 md:py-12 bg-light transition-colors duration-200">
+      <div className="max-w-4xl mx-auto w-full">
+        <nav className="relative flex w-full items-center justify-between" aria-label="Main navigation">
+          <div className="shrink-0 w-14 h-14 md:w-20 md:h-20">
+            {profileImageUrl ? (
               <Button
                 to="/"
                 styles="block w-full h-full rounded-full"
@@ -205,30 +189,40 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
               >
                 <img className="w-full h-full object-cover rounded-full" src={profileImageUrl} alt="Profile" />
               </Button>
-            </div>
-          ) : null}
-          <Button
-            ref={menuButtonRef}
-            styles={`hamburger z-[60] flex items-center justify-center md:hidden focus:outline-none p-3 min-w-[44px] min-h-[44px] ${
-              menuShowcase ? 'open' : ''
-            }`}
-            onClick={toggleMobileMenuShow}
-            analyticsEvent={ANALYTICS_EVENTS.MENU_TOGGLE}
-            analyticsProperties={{
-              surface: 'mobile_menu',
-              action: menuShowcase ? 'close' : 'open',
-            }}
-            ariaLabel={menuShowcase ? 'Close menu' : 'Open menu'}
-            ariaExpanded={menuShowcase}
-            ariaControls={MOBILE_MENU_ID}
-            type="button"
-          >
-            <span className="hamburger-top"></span>
-            <span className="hamburger-middle"></span>
-            <span className="hamburger-bottom"></span>
-          </Button>
-        </div>
-      </nav>
+            ) : null}
+          </div>
+
+          <ul className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 md:flex space-x-2">
+            {renderNavigationItems()}
+          </ul>
+
+          <div className="flex shrink-0 items-center">
+            <ThemeToggle />
+            <Button
+              ref={menuButtonRef}
+              styles={`header-icon-btn hamburger z-[60] md:hidden ${
+                menuShowcase ? 'open' : ''
+              }`}
+              onClick={toggleMobileMenuShow}
+              analyticsEvent={ANALYTICS_EVENTS.MENU_TOGGLE}
+              analyticsProperties={{
+                surface: 'mobile_menu',
+                action: menuShowcase ? 'close' : 'open',
+              }}
+              ariaLabel={menuShowcase ? 'Close menu' : 'Open menu'}
+              ariaExpanded={menuShowcase}
+              ariaControls={MOBILE_MENU_ID}
+              type="button"
+            >
+              <span className="hamburger-icon" aria-hidden="true">
+                <span className="hamburger-top"></span>
+                <span className="hamburger-middle"></span>
+                <span className="hamburger-bottom"></span>
+              </span>
+            </Button>
+          </div>
+        </nav>
+      </div>
       {menuShowcase ? (
         <div
           id={MOBILE_MENU_ID}
@@ -236,7 +230,7 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
           role="dialog"
           aria-modal="true"
           aria-label="Mobile navigation"
-          className="z-50 fixed inset-0 bg-light"
+          className="z-50 fixed inset-0 bg-light transition-colors duration-200"
         >
           <ul className="flex flex-col w-full h-full space-y-8 justify-center items-center">
             {renderMobileNavigationItems()}

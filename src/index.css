@@ -3,6 +3,26 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --color-primary: 52 55 60;
+    --color-secondary: 186 38 92;
+    --color-light: 238 234 227;
+    --color-gray: 228 228 228;
+    --color-shadow: 52 55 60;
+    --color-on-secondary: 238 234 227;
+    --color-icon-accent: 186 38 92;
+  }
+
+  .dark {
+    --color-primary: 238 234 227;
+    --color-secondary: 214 96 140;
+    --color-light: 35 37 42;
+    --color-gray: 60 63 70;
+    --color-shadow: 20 22 26;
+    --color-on-secondary: 238 234 227;
+    --color-icon-accent: 214 96 140;
+  }
+
   @font-face {
     font-family: Ovo;
     font-weight: 400;
@@ -13,13 +33,19 @@
 
 @layer components {
   html {
-    @apply scroll-smooth scroll-pt-2 bg-light;
+    @apply scroll-smooth scroll-pt-2 bg-light text-primary;
+    transition:
+      background-color 200ms ease,
+      color 200ms ease;
   }
   body {
-    @apply bg-light;
+    @apply bg-light text-primary;
+    transition:
+      background-color 200ms ease,
+      color 200ms ease;
   }
   header {
-    @apply px-[6%] pt-[8%] bg-light md:px-[10%] md:py-[2%];
+    @apply bg-light;
   }
   h1 {
     @apply text-6xl font-ovo font-bold text-left;
@@ -39,11 +65,11 @@
   .btn {
     @apply inline-block relative mt-4 cursor-pointer text-base border-[3px] px-3 py-2.5 border-solid border-primary font-sans text-primary lowercase tracking-wide;
     box-shadow:
-      1px 1px 0 0 rgb(52, 55, 60),
-      2px 2px 0 0 rgb(52, 55, 60),
-      3px 3px 0 0 rgb(52, 55, 60),
-      4px 4px 0 0 rgb(52, 55, 60),
-      5px 5px 0 0 rgb(52, 55, 60);
+      1px 1px 0 0 rgb(var(--color-shadow)),
+      2px 2px 0 0 rgb(var(--color-shadow)),
+      3px 3px 0 0 rgb(var(--color-shadow)),
+      4px 4px 0 0 rgb(var(--color-shadow)),
+      5px 5px 0 0 rgb(var(--color-shadow));
     transition:
       transform 160ms ease-out,
       box-shadow 160ms ease-out,
@@ -55,22 +81,22 @@
     @apply bg-secondary text-light border-primary;
     transform: translate(-2px, -2px);
     box-shadow:
-      1px 1px 0 0 rgb(52, 55, 60),
-      2px 2px 0 0 rgb(52, 55, 60),
-      3px 3px 0 0 rgb(52, 55, 60),
-      4px 4px 0 0 rgb(52, 55, 60),
-      5px 5px 0 0 rgb(52, 55, 60),
-      6px 6px 0 0 rgb(52, 55, 60),
-      7px 7px 0 0 rgb(52, 55, 60);
+      1px 1px 0 0 rgb(var(--color-shadow)),
+      2px 2px 0 0 rgb(var(--color-shadow)),
+      3px 3px 0 0 rgb(var(--color-shadow)),
+      4px 4px 0 0 rgb(var(--color-shadow)),
+      5px 5px 0 0 rgb(var(--color-shadow)),
+      6px 6px 0 0 rgb(var(--color-shadow)),
+      7px 7px 0 0 rgb(var(--color-shadow));
   }
   .btn:active,
   .btn.is-pressed {
     @apply bg-secondary text-light border-primary;
     transform: translate(3px, 3px);
-    box-shadow: 1px 1px 0 0 rgb(52, 55, 60);
+    box-shadow: 1px 1px 0 0 rgb(var(--color-shadow));
   }
   .btn:focus-visible {
-    outline: 2px solid rgb(186, 38, 92);
+    outline: 2px solid rgb(var(--color-secondary));
     outline-offset: 3px;
   }
   .btn span {
@@ -79,16 +105,16 @@
     font-size: inherit;
   }
   .external-link-icon {
-    color: rgb(186, 38, 92);
+    color: rgb(var(--color-icon-accent));
     transition: color 160ms ease-out;
   }
   .btn .external-link-icon {
-    color: rgb(186, 38, 92);
+    color: rgb(var(--color-icon-accent));
   }
   .btn:hover .external-link-icon,
   .btn:active .external-link-icon,
   .btn.is-pressed .external-link-icon {
-    color: rgb(238, 234, 227);
+    color: rgb(var(--color-on-secondary));
   }
   a.external-link {
     transition:
@@ -110,7 +136,7 @@
     transform: scale(1.05);
   }
   a.external-link.icon-link:focus-visible {
-    outline: 2px solid rgb(186, 38, 92);
+    outline: 2px solid rgb(var(--color-secondary));
     outline-offset: 2px;
     border-radius: 4px;
   }
@@ -130,10 +156,10 @@
   }
   a.external-link.group:hover .external-link-icon,
   a.external-link.group:active .external-link-icon {
-    color: rgb(186, 38, 92);
+    color: rgb(var(--color-icon-accent));
   }
   a.external-link:focus-visible {
-    outline: 2px solid rgb(186, 38, 92);
+    outline: 2px solid rgb(var(--color-secondary));
     outline-offset: 3px;
   }
   .btn-press {
@@ -146,10 +172,13 @@
   .btn-press.is-pressed,
   .btn-press:active {
     transform: translate(3px, 3px);
-    box-shadow: 1px 1px 0 0 rgb(52, 55, 60);
+    box-shadow: 1px 1px 0 0 rgb(var(--color-shadow));
   }
   .divider {
     @apply w-[25%] h-[1px] mx-auto bg-primary;
+  }
+  .header-icon-btn {
+    @apply flex h-11 w-11 shrink-0 items-center justify-center focus:outline-none;
   }
 }
 
@@ -158,10 +187,15 @@
 /*Hamburger styling*/
 .hamburger {
   cursor: pointer;
-  width: 24px;
-  height: 24px;
   position: relative;
   flex-shrink: 0;
+}
+
+.hamburger-icon {
+  position: relative;
+  display: block;
+  width: 24px;
+  height: 24px;
 }
 
 .hamburger-top,
@@ -171,7 +205,7 @@
   left: 0;
   width: 24px;
   height: 2px;
-  background-color: rgb(186, 38, 92);
+  background-color: rgb(var(--color-secondary));
   transform-origin: center;
   transition:
     transform 0.25s ease,
@@ -232,15 +266,15 @@
   clip: auto;
   clip-path: none;
   white-space: normal;
-  background-color: rgb(238, 234, 227);
-  color: rgb(52, 55, 60);
+  background-color: rgb(var(--color-light));
+  color: rgb(var(--color-primary));
   font-family: ui-sans-serif, system-ui, sans-serif;
   font-size: 0.875rem;
   line-height: 1.25rem;
   box-shadow:
     rgba(15, 15, 15, 0.1) 0px 0px 0px 1px,
     rgba(15, 15, 15, 0.1) 0px 2px 4px;
-  outline: 2px solid rgb(186, 38, 92);
+  outline: 2px solid rgb(var(--color-secondary));
   outline-offset: 2px;
 }
 
@@ -260,6 +294,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html,
+  body {
+    transition: none;
+  }
+
   .btn,
   .btn-press,
   a.external-link,
@@ -279,11 +318,11 @@
   .btn.is-pressed {
     transform: none;
     box-shadow:
-      1px 1px 0 0 rgb(52, 55, 60),
-      2px 2px 0 0 rgb(52, 55, 60),
-      3px 3px 0 0 rgb(52, 55, 60),
-      4px 4px 0 0 rgb(52, 55, 60),
-      5px 5px 0 0 rgb(52, 55, 60);
+      1px 1px 0 0 rgb(var(--color-shadow)),
+      2px 2px 0 0 rgb(var(--color-shadow)),
+      3px 3px 0 0 rgb(var(--color-shadow)),
+      4px 4px 0 0 rgb(var(--color-shadow)),
+      5px 5px 0 0 rgb(var(--color-shadow));
   }
 
   .hamburger-top,

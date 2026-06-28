@@ -1,13 +1,14 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: ['./index.html', './src/**/*.{tsx,ts}'],
   theme: {
     colors: {
-      primary: 'rgb(52, 55, 60)',
-      secondary: 'rgb(186, 38, 92)',
-      light: 'rgb(238, 234, 227)',
-      gray: 'rgb(228, 228, 228)',
-      rule: 'rgb(52, 55, 60)',
+      primary: 'rgb(var(--color-primary) / <alpha-value>)',
+      secondary: 'rgb(var(--color-secondary) / <alpha-value>)',
+      light: 'rgb(var(--color-light) / <alpha-value>)',
+      gray: 'rgb(var(--color-gray) / <alpha-value>)',
+      rule: 'rgb(var(--color-primary) / <alpha-value>)',
     },
     screens: {
       sm: '640px',

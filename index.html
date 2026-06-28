@@ -31,6 +31,14 @@
     content="hey 👋, i'm nischal nikit. i build things that live on the web. i also talk & write about some of those things. this is my corner of the internet." />
   <meta name="twitter:image" content="__SITE_URL__/og-cover.jpg" />
   <title>hey! i am nischal! 👋</title>
+  <script>
+    (function () {
+      var stored = localStorage.getItem('theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var theme = stored === 'dark' || stored === 'light' ? stored : (prefersDark ? 'dark' : 'light');
+      if (theme === 'dark') document.documentElement.classList.add('dark');
+    })();
+  </script>
   <style>
     .ssg-fallback {
       position: absolute;

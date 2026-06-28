@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import { PortableText } from '@portabletext/react';
 import { useLocation } from 'react-router-dom';
 import type { TypedObject } from 'sanity';
 
@@ -71,8 +70,7 @@ const FooterLabel: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 
 const Footer: React.FC<FooterProps> = ({ data, navigation, heroSocials }) => {
   const { pathname } = useLocation();
-  const { email = '', copyright = '', heading, socials = [], collection = [] } = data ?? {};
-  const { title = [] } = heading ?? {};
+  const { copyright = '', socials = [], collection = [] } = data ?? {};
   const currentYear = new Date().getFullYear();
   const copyrightText = copyright.replace(/\b20\d{2}\b/, String(currentYear));
 
@@ -92,30 +90,7 @@ const Footer: React.FC<FooterProps> = ({ data, navigation, heroSocials }) => {
     <footer className="px-4 pb-12 pt-4 md:px-8 md:pb-16 bg-light" aria-label="Site footer">
       <div className="max-w-4xl mx-auto border-t border-primary pt-10 md:pt-12">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-8 lg:gap-12">
-          <div className="md:col-span-5">
-            <Button
-              to="/"
-              styles="text-2xl font-sans font-bold text-secondary text-left hover:text-primary transition-colors duration-200 !mt-0"
-              analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
-              analyticsProperties={{ surface: 'footer', destination: '/', label: 'home' }}
-            >
-              <PortableText value={title} />
-            </Button>
-            {email ? (
-              <div className="mt-5">
-                <Button
-                  href={`mailto:${email}`}
-                  styles="text-link text-base font-sans text-primary hover:text-secondary transition-colors duration-200 lowercase !mt-0"
-                  analyticsEvent={ANALYTICS_EVENTS.EXTERNAL_CLICK}
-                  analyticsProperties={{ section: 'footer', label: 'email', url: `mailto:${email}` }}
-                >
-                  {email}
-                </Button>
-              </div>
-            ) : null}
-          </div>
-
-          <nav className="md:col-span-4" aria-label="Footer navigation">
+          <nav className="md:col-span-7" aria-label="Footer navigation">
             <FooterLabel>explore</FooterLabel>
             <ul className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3 md:grid-cols-2">
               {footerLinks.map((item) => {
@@ -146,7 +121,7 @@ const Footer: React.FC<FooterProps> = ({ data, navigation, heroSocials }) => {
           </nav>
 
           {footerSocials.length > 0 ? (
-            <div className="md:col-span-3">
+            <div className="md:col-span-5">
               <FooterLabel>connect</FooterLabel>
               <div className="flex flex-row flex-wrap items-center gap-3" aria-label="Social links">
                 {footerSocials.map((social) => (

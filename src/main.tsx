@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import './index.css';
 import App from './App';
+import { ThemeProvider } from './context/ThemeContext';
 
 posthog.init(import.meta.env.VITE_PUBLIC_POSTHOG_KEY, {
   api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
@@ -23,7 +24,9 @@ createRoot(rootElement).render(
     <Router>
       <PostHogProvider client={posthog}>
         <QueryClientProvider client={queryClient}>
-          <App />
+          <ThemeProvider>
+            <App />
+          </ThemeProvider>
         </QueryClientProvider>
       </PostHogProvider>
     </Router>
