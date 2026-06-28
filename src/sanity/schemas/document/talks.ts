@@ -13,7 +13,7 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      type: 'object',
+      type: 'object' as const,
       name: 'heading',
       title: 'Heading',
       description: 'The heading for experiments section.',
@@ -22,7 +22,7 @@ export default defineType({
           name: 'title',
           description: 'Used for heading on the about section',
           title: 'Text',
-          type: 'array',
+          type: 'array' as const,
           of: [
             {
               type: 'block',
@@ -38,13 +38,13 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      type: 'array',
+      type: 'array' as const,
       name: 'collection',
       title: 'Talks',
       description: 'This field is for all your talks',
       of: [
         defineArrayMember({
-          type: 'object',
+          type: 'object' as const,
           name: 'talk',
           title: 'Talk',
           fields: [
@@ -67,7 +67,7 @@ export default defineType({
               description: 'This field is the body of your talk section.',
             }),
             defineField({
-              type: 'object',
+              type: 'object' as const,
               name: 'link',
               title: 'Link',
               description: 'This field is the link of your talk section.',

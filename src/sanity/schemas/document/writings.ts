@@ -14,7 +14,7 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      type: 'object',
+      type: 'object' as const,
       name: 'heading',
       title: 'Heading',
       description: 'The heading for work section.',
@@ -23,7 +23,7 @@ export default defineType({
           name: 'title',
           description: 'Used for heading on the about section',
           title: 'Text',
-          type: 'array',
+          type: 'array' as const,
           of: [
             {
               type: 'block',
@@ -39,13 +39,13 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      type: 'array',
+      type: 'array' as const,
       name: 'collection',
       title: 'Writings',
       description: 'This field is for all your writings',
       of: [
         defineArrayMember({
-          type: 'object',
+          type: 'object' as const,
           name: 'writing',
           title: 'Writing',
           fields: [

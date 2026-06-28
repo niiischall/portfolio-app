@@ -14,7 +14,7 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      type: 'object',
+      type: 'object' as const,
       name: 'heading',
       title: 'Heading',
       description: 'The heading for contact section.',
@@ -23,7 +23,7 @@ export default defineType({
           name: 'title',
           description: 'Used for heading on the contact section',
           title: 'Text',
-          type: 'array',
+          type: 'array' as const,
           of: [
             {
               type: 'block',
@@ -42,7 +42,7 @@ export default defineType({
       name: 'text',
       description: 'Used for body on the contact section',
       title: 'Text',
-      type: 'array',
+      type: 'array' as const,
       of: [
         defineArrayMember({
           lists: [],
@@ -64,7 +64,7 @@ export default defineType({
       validation: (rule) => rule.max(250).required(),
     }),
     defineField({
-      type: 'object',
+      type: 'object' as const,
       name: 'link',
       title: 'Link',
       description: 'This field is the link of your contact section.',

@@ -16,4 +16,5 @@ export const OG_IMAGE_PATH = '/og-cover.jpg';
 export const SOCIAL_PROFILES = [
   'https://github.com/niiischall',
   'https://www.linkedin.com/in/niiischall',
+  'https://x.com/niiischall',
 ] as const;

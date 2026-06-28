@@ -3,7 +3,7 @@ import {defineField} from 'sanity'
 import {Input} from './components/input'
 
 export default defineField({
-  type: 'object',
+  type: 'object' as const,
   name: 'duration',
   title: 'Duration',
   components: {

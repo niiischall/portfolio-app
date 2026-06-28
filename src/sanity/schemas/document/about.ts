@@ -14,7 +14,7 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      type: 'object',
+      type: 'object' as const,
       name: 'heading',
       title: 'Heading',
       description: 'The heading for about section.',
@@ -23,7 +23,7 @@ export default defineType({
           name: 'title',
           description: 'Used for heading on the about section',
           title: 'Text',
-          type: 'array',
+          type: 'array' as const,
           of: [
             {
               type: 'block',
@@ -39,7 +39,7 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      type: 'array',
+      type: 'array' as const,
       name: 'overview',
       title: 'Overview',
       description: 'Used for overview in about section and associated link',
@@ -49,7 +49,7 @@ export default defineType({
           marks: {
             annotations: [
               {
-                type: 'object',
+                type: 'object' as const,
                 name: 'link',
                 title: 'Link',
                 fields: [
@@ -73,7 +73,7 @@ export default defineType({
       validation: (rule) => rule.max(155).required(),
     }),
     defineField({
-      type: 'object',
+      type: 'object' as const,
       name: 'cv',
       title: 'CV',
       description: 'The link for CV',

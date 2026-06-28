@@ -13,7 +13,7 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      type: 'object',
+      type: 'object' as const,
       name: 'heading',
       title: 'Heading',
       description: 'The heading for footer section.',
@@ -22,7 +22,7 @@ export default defineType({
           name: 'title',
           description: 'Used for heading on the footer section',
           title: 'Text',
-          type: 'array',
+          type: 'array' as const,
           of: [
             {
               type: 'block',
@@ -50,13 +50,13 @@ export default defineType({
       description: 'Used for copyright on the footer',
     }),
     defineField({
-      type: 'array',
+      type: 'array' as const,
       name: 'socials',
       title: 'Socials',
       description: 'This field is the socials for your footersection.',
       of: [
         defineArrayMember({
-          type: 'object',
+          type: 'object' as const,
           name: 'social',
           title: 'Social',
           fields: [
@@ -100,13 +100,13 @@ export default defineType({
       ],
     }),
     defineField({
-      type: 'array',
+      type: 'array' as const,
       name: 'collection',
       title: 'Navigation Items List',
       description: 'Section links displayed on the footer.',
       of: [
-        defineField({
-          type: 'object',
+        defineArrayMember({
+          type: 'object' as const,
           name: 'item',
           title: 'Navigation Link',
           fields: [

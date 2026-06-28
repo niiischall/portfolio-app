@@ -14,7 +14,7 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      type: 'object',
+      type: 'object' as const,
       name: 'heading',
       title: 'Heading',
       description: 'The heading for experiments section.',
@@ -23,7 +23,7 @@ export default defineType({
           name: 'title',
           description: 'Used for heading on the about section',
           title: 'Text',
-          type: 'array',
+          type: 'array' as const,
           of: [
             {
               type: 'block',
@@ -39,13 +39,13 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      type: 'array',
+      type: 'array' as const,
       name: 'collection',
       title: 'Experiments',
       description: 'This field is for all your experiments',
       of: [
         defineArrayMember({
-          type: 'object',
+          type: 'object' as const,
           name: 'experiment',
           title: 'Experiment',
           fields: [
@@ -78,7 +78,7 @@ export default defineType({
               description: 'This image will be used as the cover image for the experiment.',
             }),
             defineField({
-              type: 'object',
+              type: 'object' as const,
               name: 'link',
               title: 'Link',
               description: 'This field is the link of your experiment section.',

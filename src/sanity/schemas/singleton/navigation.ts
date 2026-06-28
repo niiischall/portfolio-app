@@ -1,4 +1,4 @@
-import {defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export default defineType({
   type: 'document',
@@ -13,7 +13,7 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      type: 'object',
+      type: 'object' as const,
       name: 'heading',
       title: 'Heading',
       description: 'The heading for navigation',
@@ -32,13 +32,13 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      type: 'array',
+      type: 'array' as const,
       name: 'collection',
       title: 'Navigation Items List',
       description: 'Section links displayed on the navigation.',
       of: [
-        defineField({
-          type: 'object',
+        defineArrayMember({
+          type: 'object' as const,
           name: 'item',
           title: 'Navigation Link',
           fields: [

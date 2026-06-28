@@ -13,13 +13,13 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      type: 'array',
+      type: 'array' as const,
       name: 'socials',
       title: 'Socials',
       description: 'This field is the socials for your hero section.',
       of: [
         defineArrayMember({
-          type: 'object',
+          type: 'object' as const,
           name: 'social',
           title: 'Social',
           fields: [
@@ -63,7 +63,7 @@ export default defineType({
       ],
     }),
     defineField({
-      type: 'object',
+      type: 'object' as const,
       name: 'greeting',
       title: 'Greeting',
       description: 'This field is the greetings component for your hero section.',
@@ -72,7 +72,7 @@ export default defineType({
           name: 'text',
           description: 'Used for introduction on the hero section',
           title: 'Text',
-          type: 'array',
+          type: 'array' as const,
           of: [
             {
               type: 'block',
@@ -93,7 +93,7 @@ export default defineType({
           validation: (rule) => rule.max(250).required(),
         }),
         defineField({
-          type: 'object',
+          type: 'object' as const,
           name: 'link',
           title: 'Link',
           fields: [
