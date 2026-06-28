@@ -1,4 +1,5 @@
-import {Routes, Route} from 'react-router-dom';
+import { lazy, Suspense } from 'react';
+import { Routes, Route } from 'react-router-dom';
 
 import Navigation from '../sections/Navigation';
 import Hero from '../sections/Hero';
@@ -9,15 +10,38 @@ import Writings from '../sections/Writings';
 import Contact from '../sections/Contact';
 import Talks from '../sections/Talks';
 import Footer from '../sections/Footer';
-import StudioPage from '../sanity/Studio';
+import PageSkeleton from './PageSkeleton';
 
-import {useSanityData} from '../lib/sanity-client';
+import { useSanityData } from '../lib/sanity-client';
+
+const StudioPage = lazy(() => import('../sanity/Studio'));
+
+const StudioFallback = () => (
+  <div className="min-h-screen bg-light flex items-center justify-center">
+    <p className="font-sans text-primary text-sm">Loading Sanity Studio…</p>
+  </div>
+);
 
 const PortfolioLayout = () => {
-  const {data, isLoading, isError} = useSanityData();
+  const { data, isLoading, isError } = useSanityData();
 
-  if (isLoading || isError) {
-    return null;
+  if (isLoading) {
+    return <PageSkeleton />;
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen flex flex-col bg-light">
+        <main
+          id="main-content"
+          className="flex-1 flex items-center justify-center px-4 text-center"
+        >
+          <p className="font-ovo text-primary max-w-md">
+            Something went wrong while loading the site. Please refresh and try again.
+          </p>
+        </main>
+      </div>
+    );
   }
 
   return (
@@ -42,7 +66,14 @@ const PortfolioLayout = () => {
 export const Layout = () => {
   return (
     <Routes>
-      <Route path="/studio/*" element={<StudioPage />} />
+      <Route
+        path="/studio/*"
+        element={
+          <Suspense fallback={<StudioFallback />}>
+            <StudioPage />
+          </Suspense>
+        }
+      />
       <Route path="/*" element={<PortfolioLayout />} />
     </Routes>
   );

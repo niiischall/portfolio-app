@@ -39,6 +39,7 @@ const Talks: React.FC<TalksProps> = ({ data }) => {
                         className="rounded-md shadow-xl"
                         src={urlForImage(cover)?.height(350).width(450).url()}
                         alt={heading}
+                        loading="lazy"
                       />
                     </div>
                     <div>
@@ -58,6 +59,7 @@ const Talks: React.FC<TalksProps> = ({ data }) => {
                         className="rounded-md shadow-xl"
                         src={urlForImage(cover)?.height(350).width(450).url()}
                         alt={heading}
+                        loading="lazy"
                       />
                     </div>
                     <h3 className="text-2xl font-sans font-bold mb-4 text-left">{heading}</h3>

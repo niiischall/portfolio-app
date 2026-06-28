@@ -37,6 +37,7 @@ const Work: React.FC<WorkProps> = ({ data }) => {
                 className="border-solid border-2 border-primary"
                 src={urlForImage(cover)?.width(48).height(48).url()}
                 alt={orgName}
+                loading="lazy"
               />
             </div>
             <div className="w-[95%] p-8">

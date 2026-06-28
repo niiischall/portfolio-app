@@ -35,7 +35,11 @@ const Experiments: React.FC<ExperimentsProps> = ({ data }) => {
                 {href ? (
                   <Button href={href} external styles="group" analyticsLabel={`navigation-experiments-${heading}`}>
                     <div className="mb-6 h-[300px] w-auto max-h-[250px] overflow-hidden flex flex-col justify-center items-start">
-                      <img src={urlForImage(image)?.height(250).url()} alt={heading} />
+                      <img
+                        src={urlForImage(image)?.height(250).url()}
+                        alt={heading}
+                        loading="lazy"
+                      />
                     </div>
                     <div>
                       <div className="flex gap-2">
@@ -50,7 +54,11 @@ const Experiments: React.FC<ExperimentsProps> = ({ data }) => {
                 ) : (
                   <div>
                     <div className="mb-6 h-[300px] w-auto max-h-[250px] overflow-hidden flex flex-col justify-center items-start">
-                      <img src={urlForImage(image)?.height(250).url()} alt={heading} />
+                      <img
+                        src={urlForImage(image)?.height(250).url()}
+                        alt={heading}
+                        loading="lazy"
+                      />
                     </div>
                     <h3 className="text-2xl font-sans font-bold mb-4 text-left">{heading}</h3>
                     <p className="text-md mb-4 text-left">{body}</p>

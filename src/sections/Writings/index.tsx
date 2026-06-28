@@ -34,7 +34,7 @@ const Writings: React.FC<WritingsProps> = ({ data }) => {
                 {link ? (
                   <Button styles="group" href={link} external analyticsLabel={`writings-${heading}`}>
                     <div className="mb-6 shadow-box">
-                      <img src={urlForImage(image)?.url()} alt={heading} />
+                      <img src={urlForImage(image)?.url()} alt={heading} loading="lazy" />
                     </div>
                     <div className="px-4 flex justify-end">
                       <Click style={{ width: '18px', height: '18px' }} />
@@ -49,7 +49,7 @@ const Writings: React.FC<WritingsProps> = ({ data }) => {
                 ) : (
                   <div>
                     <div className="mb-6 shadow-box">
-                      <img src={urlForImage(image)?.url()} alt={heading} />
+                      <img src={urlForImage(image)?.url()} alt={heading} loading="lazy" />
                     </div>
                     <div className="px-4 py-2">
                       <h3 className="text-xl font-sans font-bold mb-4 text-left">{heading}</h3>

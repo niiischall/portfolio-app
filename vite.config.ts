@@ -22,17 +22,41 @@ export default defineConfig(({ mode }) => {
       },
     ],
     define: { 'process.env': {} },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (!id.includes('node_modules')) return;
+
+            if (id.includes('posthog-js')) {
+              return 'posthog-vendor';
+            }
+
+            if (id.includes('@tanstack/react-query')) {
+              return 'query-vendor';
+            }
+
+            if (id.includes('sanity') || id.includes('@sanity/')) {
+              return 'sanity-vendor';
+            }
+
+            if (
+              id.includes('/react/') ||
+              id.includes('react-dom') ||
+              id.includes('react-router') ||
+              id.includes('scheduler')
+            ) {
+              return 'react-vendor';
+            }
+          },
+        },
+      },
+    },
     resolve: {
       dedupe: ['react', 'react-dom', 'react-is', 'styled-components'],
     },
     optimizeDeps: {
-      include: [
-        'sanity',
-        '@sanity/vision',
-        '@sanity/ui',
-        '@sanity/icons',
-        'styled-components',
-      ],
+      include: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query'],
     },
     server: {
       proxy: {
