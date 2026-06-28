@@ -6,7 +6,7 @@
   @font-face {
     font-family: Ovo;
     font-weight: 400;
-    src: url('./fonts/Ovo-Regular.ttf');
+    src: url('/fonts/Ovo-Regular.woff2') format('woff2');
     font-display: swap;
   }
 }
