@@ -3,6 +3,7 @@ import { PortableText } from '@portabletext/react';
 
 import type { TypedObject } from 'sanity';
 import Button from '../../components/Button';
+import { trackedPortableTextComponents } from '../../components/portableText/tracked';
 import Click from '../../utils/svgs/Click';
 import { ANALYTICS_EVENTS } from '../../utils/helpers/analytics';
 
@@ -24,6 +25,7 @@ const Contact: React.FC<ContactProps> = ({ data }) => {
   const { title = [] } = heading ?? {};
   const { text: linkText = '', href = '' } = link ?? {};
   const isExternal = href.startsWith('http');
+  const portableTextComponents = trackedPortableTextComponents('contact');
 
   return (
     <section
@@ -31,10 +33,10 @@ const Contact: React.FC<ContactProps> = ({ data }) => {
       id="contact"
     >
       <div className="pb-4 md:pb-8 w-full max-w-2xl">
-        <PortableText value={title} />
+        <PortableText value={title} components={portableTextComponents} />
       </div>
       <div className="pb-4 w-full max-w-2xl">
-        <PortableText value={text} />
+        <PortableText value={text} components={portableTextComponents} />
       </div>
       {href && linkText ? (
         <Button

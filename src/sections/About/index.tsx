@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 
 import type { TypedObject } from 'sanity';
 import Button from '../../components/Button';
+import { trackedPortableTextComponents } from '../../components/portableText/tracked';
 import Click from '../../utils/svgs/Click';
 import { ANALYTICS_EVENTS } from '../../utils/helpers/analytics';
 
@@ -29,6 +30,7 @@ const About: React.FC<AboutProps> = ({ data }) => {
   const aboutBtnStyles = 'btn lowercase !mt-0';
   const location = useLocation();
   const pageEnter = Boolean((location.state as { pageEnter?: boolean } | null)?.pageEnter);
+  const portableTextComponents = trackedPortableTextComponents('about');
 
   return (
     <section
@@ -37,11 +39,11 @@ const About: React.FC<AboutProps> = ({ data }) => {
     >
       <div className="max-w-4xl flex flex-col justify-center items-start space-y-12 space-x-0 md:mx-auto">
         <div className="text-3xl px-0 text-left">
-          <PortableText value={headingTitle} />
+          <PortableText value={headingTitle} components={portableTextComponents} />
         </div>
         <div className="md:max-w-xl">
           <div className="text-left">
-            <PortableText value={overview} />
+            <PortableText value={overview} components={portableTextComponents} />
             {isCvAvailable ? (
               <div className="mt-8">
                 <Button

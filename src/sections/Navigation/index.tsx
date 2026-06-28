@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import type { TypedObject } from 'sanity';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import { HeroSocialType, NavigationCollectionType } from '../../utils/helpers/types';
 import Button from '../../components/Button';
@@ -175,18 +175,36 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
       <nav className="flex items-center w-full justify-evenly" aria-label="Main navigation">
         {profileImageUrl ? (
           <div className="hidden md:flex w-20 h-20 shrink-0">
-            <Link to="/">
+            <Button
+              to="/"
+              styles="block w-full h-full rounded-full"
+              analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
+              analyticsProperties={{
+                surface: 'header',
+                destination: '/',
+                label: 'profile',
+              }}
+            >
               <img className="w-full h-full object-cover rounded-full" src={profileImageUrl} alt="Profile" />
-            </Link>
+            </Button>
           </div>
         ) : null}
         <ul className="space-x-2 hidden md:flex">{renderNavigationItems()}</ul>
         <div className="flex items-center w-full justify-between md:hidden">
           {profileImageUrl ? (
             <div className="flex w-14 h-14 shrink-0">
-              <Link to="/">
+              <Button
+                to="/"
+                styles="block w-full h-full rounded-full"
+                analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
+                analyticsProperties={{
+                  surface: 'header',
+                  destination: '/',
+                  label: 'profile',
+                }}
+              >
                 <img className="w-full h-full object-cover rounded-full" src={profileImageUrl} alt="Profile" />
-              </Link>
+              </Button>
             </div>
           ) : null}
           <Button
