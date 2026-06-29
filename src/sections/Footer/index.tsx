@@ -90,36 +90,6 @@ const Footer: React.FC<FooterProps> = ({ data, navigation, heroSocials }) => {
     <footer className="px-4 pb-12 pt-4 md:px-8 md:pb-16 bg-light" aria-label="Site footer">
       <div className="max-w-4xl mx-auto border-t border-primary pt-10 md:pt-12">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-8 lg:gap-12">
-          <nav className="md:col-span-7" aria-label="Footer navigation">
-            <FooterLabel>explore</FooterLabel>
-            <ul className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3 md:grid-cols-2">
-              {footerLinks.map((item) => {
-                const path = normalizePath(item.slug?.current);
-                const isActive = pathname === path;
-                const linkProps = getLinkProps(item.slug?.current);
-
-                return (
-                  <li key={item._key}>
-                    <Button
-                      {...linkProps}
-                      styles={`text-base font-sans font-bold lowercase tracking-wide transition-colors duration-200 !mt-0 ${
-                        isActive ? 'text-secondary' : 'text-primary hover:text-secondary'
-                      }`}
-                      analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
-                      analyticsProperties={{
-                        surface: 'footer',
-                        destination: path,
-                        label: item.title,
-                      }}
-                    >
-                      {item.title}
-                    </Button>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
-
           {footerSocials.length > 0 ? (
             <div className="md:col-span-5">
               <FooterLabel>connect</FooterLabel>
@@ -145,19 +115,6 @@ const Footer: React.FC<FooterProps> = ({ data, navigation, heroSocials }) => {
               </div>
             </div>
           ) : null}
-        </div>
-
-        <div className="mt-10 pt-6 border-t border-gray flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm font-ovo text-primary opacity-80">{copyrightText}</p>
-          <Button
-            type="button"
-            styles="text-sm font-sans font-bold lowercase text-primary hover:text-secondary transition-colors duration-200 !mt-0"
-            onClick={scrollToTop}
-            analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
-            analyticsProperties={{ surface: 'footer', destination: 'top', label: 'back to top' }}
-          >
-            back to top ↑
-          </Button>
         </div>
       </div>
     </footer>
