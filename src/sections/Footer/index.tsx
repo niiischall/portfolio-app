@@ -1,45 +1,11 @@
 import React, { useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { GithubLogo, Globe, LinkedinLogo, XLogo, type Icon } from '@phosphor-icons/react';
 import type { TypedObject } from 'sanity';
 
 import Button from '../../components/Button';
-import { urlForImage } from '../../lib/sanity.image';
-import { getLinkProps } from '../../utils/helpers/link-props';
-import { isExternalUrl, isLiveRoute, resolvePath } from '../../utils/helpers/routes';
+import { PERSON_NAME } from '../../config/site';
 import { ANALYTICS_EVENTS } from '../../utils/helpers/analytics';
-import type {
-  FooterNavigationCollectionType,
-  FooterSocialType,
-  HeroSocialType,
-  NavigationCollectionType,
-} from '../../utils/helpers/types';
-
-type FooterNavLink = {
-  _key: string | number;
-  title: string;
-  slug: {
-    current: string;
-  };
-};
-
-// No hardcoded fallback: a stale literal route list here is one more place for
-// route names to drift out of sync. If the CMS has no links, render none.
-const resolveFooterLinks = (
-  footerLinks: FooterNavigationCollectionType[] | undefined,
-  navigationLinks: NavigationCollectionType[] | undefined,
-): FooterNavLink[] => {
-  const links = footerLinks?.length ? footerLinks : navigationLinks ?? [];
-  // CMS links may still point at removed sections or renamed routes; keep only
-  // live destinations, one link per page.
-  const seen = new Set<string>();
-  return links.filter((link) => {
-    const path = resolvePath(link.slug?.current);
-    if (!isExternalUrl(path) && !isLiveRoute(path)) return false;
-    if (seen.has(path)) return false;
-    seen.add(path);
-    return true;
-  });
-};
+import type { FooterNavigationCollectionType, FooterSocialType, HeroSocialType } from '../../utils/helpers/types';
 
 const resolveFooterSocials = (
   footerSocials: FooterSocialType[] | undefined,
@@ -47,6 +13,25 @@ const resolveFooterSocials = (
 ): FooterSocialType[] => {
   if (footerSocials?.length) return footerSocials;
   return (heroSocials ?? []) as FooterSocialType[];
+};
+
+// The CMS stores each social as a fixed-colour image, which was nearly
+// invisible in dark mode. Icons are picked from the URL instead, so they take
+// the text colour in both themes and get a proper accessible name (the CMS
+// captions read "LinkedIn URL").
+const NETWORKS: { match: RegExp; name: string; Icon: Icon }[] = [
+  { match: /(^|\.)linkedin\.com$/, name: 'LinkedIn', Icon: LinkedinLogo },
+  { match: /(^|\.)(x|twitter)\.com$/, name: 'X', Icon: XLogo },
+  { match: /(^|\.)github\.com$/, name: 'GitHub', Icon: GithubLogo },
+];
+
+const networkFor = (url: string) => {
+  try {
+    const host = new URL(url).hostname;
+    return NETWORKS.find((network) => network.match.test(host));
+  } catch {
+    return undefined;
+  }
 };
 
 export interface FooterProps {
@@ -59,124 +44,56 @@ export interface FooterProps {
     socials?: FooterSocialType[];
     collection?: FooterNavigationCollectionType[];
   };
-  navigation?: {
-    collection: NavigationCollectionType[];
-  };
   heroSocials?: HeroSocialType[];
 }
 
-const FooterLabel: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <p className="label mb-4">{children}</p>
-);
-
-const Footer: React.FC<FooterProps> = ({ data, navigation, heroSocials }) => {
-  const { pathname } = useLocation();
-  const { email = '', copyright = '', socials = [], collection = [] } = data ?? {};
-  const currentYear = new Date().getFullYear();
-  const copyrightText = copyright.replace(/\b20\d{2}\b/, String(currentYear));
-
-  const footerLinks = useMemo(
-    () => resolveFooterLinks(collection, navigation?.collection),
-    [collection, navigation?.collection],
-  );
-
+const Footer: React.FC<FooterProps> = ({ data, heroSocials }) => {
+  const { email = '', copyright = '', socials = [] } = data ?? {};
+  const copyrightText = copyright.replace(/\b20\d{2}\b/, String(new Date().getFullYear()));
   const footerSocials = useMemo(() => resolveFooterSocials(socials, heroSocials), [socials, heroSocials]);
 
-  const scrollToTop = () => {
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
-  };
-
   return (
-    <footer className="px-4 pb-12 pt-4 md:px-8 md:pb-16 bg-light" aria-label="Site footer">
-      <div className="max-w-4xl mx-auto border-t border-rule pt-10 md:pt-12">
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-8 lg:gap-12">
-          <div className="md:col-span-5">
-            {footerSocials.length > 0 ? (
-              <>
-                <FooterLabel>connect</FooterLabel>
-                <div className="flex flex-row flex-wrap items-center gap-3" aria-label="Social links">
-                  {footerSocials.map((social) => (
-                    <Button
-                      key={social._key}
-                      href={social.url}
-                      external
-                      styles="icon-link min-w-[44px] min-h-[44px] flex items-center justify-center"
-                      analyticsEvent={ANALYTICS_EVENTS.EXTERNAL_CLICK}
-                      analyticsProperties={{ section: 'footer', surface: 'social', url: social.url }}
-                      ariaLabel={social.alt || social.caption}
-                    >
-                      <img
-                        className="w-6 h-6 object-contain"
-                        src={urlForImage(social.cover)?.width(24).url()}
-                        alt=""
-                        aria-hidden="true"
-                      />
-                    </Button>
-                  ))}
-                </div>
-              </>
-            ) : null}
+    <footer className="px-4 pt-8 pb-16 md:px-8" aria-label="Site footer">
+      <div className="max-w-4xl mx-auto flex flex-col items-center text-center">
+        <div className="h-px w-24 bg-rule" aria-hidden="true" />
 
-            {/* The address was previously only in the JSON-LD, i.e. readable by
-                scrapers but not by people. This is the site's contact path. */}
-            {email ? (
-              <div className="mt-8">
-                <FooterLabel>email</FooterLabel>
-                <Button
-                  href={`mailto:${email}`}
-                  styles="text-link text-base font-sans text-primary hover:text-secondary transition-colors rounded-sm"
-                  analyticsEvent={ANALYTICS_EVENTS.EXTERNAL_CLICK}
-                  analyticsProperties={{ section: 'footer', surface: 'email', url: `mailto:${email}` }}
-                >
-                  {email}
-                </Button>
-              </div>
-            ) : null}
-          </div>
+        {footerSocials.length > 0 ? (
+          <ul className="mt-10 flex flex-wrap items-center justify-center gap-2" aria-label="Social links">
+            {footerSocials.map((social) => {
+              const network = networkFor(social.url);
+              const Icon = network?.Icon ?? Globe;
+              const label = network ? `${PERSON_NAME} on ${network.name}` : social.alt || social.caption;
+              return (
+                <li key={social._key}>
+                  <Button
+                    href={social.url}
+                    external
+                    styles="flex h-11 w-11 items-center justify-center rounded-sm text-muted transition-colors hover:text-primary"
+                    analyticsEvent={ANALYTICS_EVENTS.EXTERNAL_CLICK}
+                    analyticsProperties={{ section: 'footer', surface: 'social', url: social.url }}
+                    ariaLabel={label}
+                  >
+                    <Icon size={26} weight="fill" aria-hidden="true" />
+                  </Button>
+                </li>
+              );
+            })}
+          </ul>
+        ) : null}
 
-          {footerLinks.length > 0 ? (
-            <nav className="md:col-span-7" aria-label="Footer navigation">
-              <FooterLabel>pages</FooterLabel>
-              <ul className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3 md:grid-cols-2">
-                {footerLinks.map((link) => {
-                  const isCurrent = pathname === resolvePath(link.slug.current);
-                  return (
-                    <li key={link._key}>
-                      <Button
-                        {...getLinkProps(link.slug.current)}
-                        styles={`text-base font-sans lowercase transition-colors hover:text-secondary ${
-                          isCurrent ? 'text-secondary' : 'text-primary'
-                        }`}
-                        ariaCurrent={isCurrent ? 'page' : undefined}
-                        analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
-                        analyticsProperties={{
-                          surface: 'footer',
-                          destination: resolvePath(link.slug.current),
-                          label: link.title,
-                        }}
-                      >
-                        {link.title}
-                      </Button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </nav>
-          ) : null}
-        </div>
+        {copyrightText ? <p className="mt-6 text-base text-muted">{copyrightText}</p> : null}
 
-        <div className="mt-10 pt-6 border-t border-rule flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          {copyrightText ? <p className="text-sm font-sans text-primary opacity-70">{copyrightText}</p> : null}
+        {/* With the contact page gone, this is the site's contact path. */}
+        {email ? (
           <Button
-            onClick={scrollToTop}
-            styles="text-sm font-sans text-primary hover:text-secondary transition-colors self-start sm:self-auto rounded-sm"
-            analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
-            analyticsProperties={{ surface: 'footer', destination: '#top', label: 'back to top' }}
+            href={`mailto:${email}`}
+            styles="mt-4 text-base text-muted underline decoration-rule underline-offset-[6px] transition-colors hover:text-primary hover:decoration-current rounded-sm"
+            analyticsEvent={ANALYTICS_EVENTS.EXTERNAL_CLICK}
+            analyticsProperties={{ section: 'footer', surface: 'email', url: `mailto:${email}` }}
           >
-            back to top ↑
+            {email}
           </Button>
-        </div>
+        ) : null}
       </div>
     </footer>
   );

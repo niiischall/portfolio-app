@@ -87,7 +87,7 @@ const PortfolioLayout = () => {
           <Route path="*" Component={NotFound} />
         </Routes>
       </main>
-      <Footer data={data?.footer} navigation={data?.navigation} heroSocials={data?.hero?.socials} />
+      <Footer data={data?.footer} heroSocials={data?.hero?.socials} />
     </div>
   );
 };
