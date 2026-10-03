@@ -1,8 +1,10 @@
 import React, { useMemo } from 'react';
 
 import type { HeroSocialType, WritingsCollectionType } from '../../utils/helpers/types';
-import type { TypedObject } from 'sanity';
+import type { Image, TypedObject } from 'sanity';
 import Button from '../../components/Button';
+import { PERSON_NAME } from '../../config/site';
+import { urlForImage } from '../../lib/sanity.image';
 import IndexSection from '../../components/IndexSection';
 import { toWritingItems } from '../Writings';
 import { ANALYTICS_EVENTS } from '../../utils/helpers/analytics';
@@ -46,6 +48,14 @@ const Hero: React.FC<HeroProps> = ({ data, writings = [] }) => {
   const recentWriting = useMemo(() => toWritingItems(writings).slice(0, RECENT_COUNT), [writings]);
   const { greeting } = data ?? {};
   const { text: greetingText = [] } = greeting ?? {};
+  const cover = data?.cover;
+  // 2x the largest rendered size, for high-density screens.
+  const portraitUrl = cover?.asset?._ref
+    ? urlForImage(cover as Image)
+        ?.width(288)
+        .height(288)
+        .url()
+    : undefined;
 
   // The CMS greeting is heading blocks ("hey 👋, i'm", "nischal") followed by
   // the tagline. The headings join into one <h1> on a single line — they were
@@ -68,37 +78,52 @@ const Hero: React.FC<HeroProps> = ({ data, writings = [] }) => {
   return (
     <section className="relative w-full md:mx-auto px-4 pt-12 pb-24 flex-1 md:px-8 md:pt-20" id="home">
       <div className="max-w-4xl md:mx-auto">
-        <div className="max-w-2xl">
-          {headline ? <h1>{headline}</h1> : null}
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:gap-10">
+          {portraitUrl ? (
+            // Above the fold, so load it eagerly and give it fixed dimensions
+            // (no layout shift).
+            <img
+              src={portraitUrl}
+              alt={PERSON_NAME}
+              width={144}
+              height={144}
+              loading="eager"
+              {...{ fetchpriority: 'high' }}
+              className="h-24 w-24 shrink-0 rounded-full object-cover ring-1 ring-rule sm:h-36 sm:w-36"
+            />
+          ) : null}
+          <div className="max-w-2xl min-w-0">
+            {headline ? <h1>{headline}</h1> : null}
 
-          {/* Onward links sit inline in the prose instead of as buttons. */}
-          <p className="mt-6 font-serif text-[1.25rem] leading-[1.65] text-primary/80 md:text-[1.375rem]">
-            {intro ? `${intro} ` : null}
-            Read my{' '}
-            <Button
-              to="/writing"
-              styles={inlineLink}
-              analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
-              analyticsProperties={{ section: 'hero', surface: 'intro', destination: '/writing', label: 'writing' }}
-            >
-              writing
-            </Button>
-            , or find out{' '}
-            <Button
-              to="/about"
-              styles={inlineLink}
-              analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
-              analyticsProperties={{
-                section: 'hero',
-                surface: 'cross_link',
-                destination: '/about',
-                label: 'more about me',
-              }}
-            >
-              more about me
-            </Button>
-            .
-          </p>
+            {/* Onward links sit inline in the prose instead of as buttons. */}
+            <p className="mt-6 font-serif text-[1.25rem] leading-[1.65] text-primary/80 md:text-[1.375rem]">
+              {intro ? `${intro} ` : null}
+              Read my{' '}
+              <Button
+                to="/writing"
+                styles={inlineLink}
+                analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
+                analyticsProperties={{ section: 'hero', surface: 'intro', destination: '/writing', label: 'writing' }}
+              >
+                writing
+              </Button>
+              , or find out{' '}
+              <Button
+                to="/about"
+                styles={inlineLink}
+                analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
+                analyticsProperties={{
+                  section: 'hero',
+                  surface: 'cross_link',
+                  destination: '/about',
+                  label: 'more about me',
+                }}
+              >
+                more about me
+              </Button>
+              .
+            </p>
+          </div>
         </div>
         {recentWriting.length > 0 ? (
           <div className="mt-16 md:mt-24">
