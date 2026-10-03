@@ -27,6 +27,11 @@ export default defineConfig(({ mode }) => {
     build: {
       rollupOptions: {
         output: {
+          // Allowlist only. A previous `id.includes('sanity')` rule put the tiny
+          // @sanity/image-url builder in the same chunk as all of Sanity Studio,
+          // and sanity.image.ts is imported by Navigation/Footer/Work — so every
+          // public route pulled ~4.9 MB of Studio. Unmatched modules are now left
+          // to Rollup, which keeps Studio-only code behind the lazy /studio import.
           manualChunks(id) {
             if (!id.includes('node_modules')) return;
 
@@ -38,16 +43,7 @@ export default defineConfig(({ mode }) => {
               return 'query-vendor';
             }
 
-            if (id.includes('sanity') || id.includes('@sanity/')) {
-              return 'sanity-vendor';
-            }
-
-            if (
-              id.includes('/react/') ||
-              id.includes('react-dom') ||
-              id.includes('react-router') ||
-              id.includes('scheduler')
-            ) {
+            if (/node_modules\/(react-router-dom|react-router|react-dom|scheduler|react)\//.test(id)) {
               return 'react-vendor';
             }
           },
