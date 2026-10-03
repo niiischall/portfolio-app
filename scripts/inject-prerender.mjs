@@ -39,19 +39,17 @@ const blocksToPlainText = (blocks) => {
     .trim();
 };
 
-const renderBlocksHtml = (blocks) => {
+// Mirrors the Hero component: heading blocks join into one <h1>, the rest
+// becomes the intro paragraph. Keeps the crawlable home page's heading
+// structure identical to what the browser renders.
+const renderGreetingHtml = (blocks) => {
   if (!Array.isArray(blocks)) return '';
-  return blocks
-    .map((block) => {
-      const text = Array.isArray(block?.children)
-        ? block.children.map((child) => child?.text ?? '').join('')
-        : '';
-      if (!text) return '';
-      const style = block?.style || 'normal';
-      const tag = style === 'h1' || style === 'h2' ? 'h1' : style === 'h3' ? 'h2' : 'p';
-      return `<${tag}>${escapeHtml(text)}</${tag}>`;
-    })
-    .join('');
+  const text = (block) =>
+    (Array.isArray(block?.children) ? block.children.map((child) => child?.text ?? '').join('') : '').trim();
+  const isHeading = (block) => String(block?.style ?? '').startsWith('h');
+  const headline = blocks.filter(isHeading).map(text).filter(Boolean).join(' ');
+  const intro = blocks.filter((block) => !isHeading(block)).map(text).filter(Boolean).join(' ');
+  return `${headline ? `<h1>${escapeHtml(headline)}</h1>` : ''}${intro ? `<p>${escapeHtml(intro)}</p>` : ''}`;
 };
 
 const escapeHtml = (value) =>
@@ -67,7 +65,7 @@ const listItems = (items, renderItem) =>
 const renderRouteSnapshot = (route, data) => {
   switch (route) {
     case '/':
-      return renderBlocksHtml(data.hero?.greeting?.text);
+      return renderGreetingHtml(data.hero?.greeting?.text);
     case '/about':
       // About absorbed the work timeline; keep that copy crawlable here.
       return `<h1>${escapeHtml(blocksToPlainText(data.about?.heading?.title))}</h1><p>${escapeHtml(
