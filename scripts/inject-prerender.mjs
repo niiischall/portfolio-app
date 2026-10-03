@@ -16,40 +16,11 @@ const distDir = path.join(rootDir, 'dist');
 
 const SITE_URL = (process.env.VITE_SITE_URL || 'https://www.nischalnikit.xyz').replace(/\/$/, '');
 
-const ROUTE_META = {
-  '/': {
-    title: 'hey! i am nischal! 👋',
-    description:
-      "hey 👋, i'm nischal nikit. i build things that live on the web. i also talk & write about some of those things. this is my corner of the internet.",
-  },
-  '/about': {
-    title: 'about · Nischal Nikit',
-    description:
-      'Learn about Nischal Nikit - background, interests, and what he is working on in software and the web.',
-  },
-  '/work': {
-    title: 'work · Nischal Nikit',
-    description: 'Work experience and roles at companies where Nischal Nikit has built products on the web.',
-  },
-  '/experiments': {
-    title: 'experiments · Nischal Nikit',
-    description:
-      'Side projects and experiments by Nischal Nikit - prototypes, tools, and ideas explored outside day-to-day work.',
-  },
-  '/writings': {
-    title: 'blogs · Nischal Nikit',
-    description:
-      'Essays and technical writing by Nischal Nikit on React, full-stack development, and building for the web.',
-  },
-  '/talks': {
-    title: 'talks · Nischal Nikit',
-    description: 'Conference talks and presentations by Nischal Nikit on software engineering and web development.',
-  },
-  '/contact': {
-    title: 'contact · Nischal Nikit',
-    description: 'Get in touch with Nischal Nikit for collaboration, speaking, or general inquiries.',
-  },
-};
+// Single source of truth, shared with src/config/route-meta.ts. This used to be
+// a hand-copied table, and drift between the two was invisible: a wrong title
+// here means a wrong <title> and canonical in the crawlable HTML, with no error.
+const ROUTES_CONFIG = JSON.parse(fs.readFileSync(path.join(rootDir, 'src/config/routes.json'), 'utf8'));
+const ROUTE_META = ROUTES_CONFIG.routes;
 
 const PORTFOLIO_ROUTES = Object.keys(ROUTE_META);
 
@@ -57,10 +28,7 @@ const COMBINED_QUERY = `{
   "hero": *[_type == "hero"][0]{ greeting{ text, link } },
   "about": *[_type == "about"][0]{ heading, overview, cv },
   "work": *[_type == "work"][0]{ heading, collection[]{ designation, description, link } },
-  "experiments": *[_type == "experiments"][0]{ heading, collection[]{ heading, body } },
-  "writings": *[_type == "writings"][0]{ heading, collection[]{ heading, body, link } },
-  "talks": *[_type == "talks"][0]{ heading, collection[]{ heading, body } },
-  "contact": *[_type == "contact"][0]{ heading, text, link }
+  "writings": *[_type == "writings"][0]{ heading, collection[]{ heading, body, link } }
 }`;
 
 const blocksToPlainText = (blocks) => {
@@ -99,42 +67,36 @@ const listItems = (items, renderItem) =>
 const renderRouteSnapshot = (route, data) => {
   switch (route) {
     case '/':
-      return `${renderBlocksHtml(data.hero?.greeting?.text)}`;
+      return renderBlocksHtml(data.hero?.greeting?.text);
     case '/about':
-      return `<h1>${escapeHtml(
-        blocksToPlainText(data.about?.heading?.title),
-      )}</h1><p>${escapeHtml(blocksToPlainText(data.about?.overview))}</p>`;
-    case '/work':
-      return `<h1>${escapeHtml(blocksToPlainText(data.work?.heading?.title))}</h1>${listItems(
+      // About absorbed the work timeline; keep that copy crawlable here.
+      return `<h1>${escapeHtml(blocksToPlainText(data.about?.heading?.title))}</h1><p>${escapeHtml(
+        blocksToPlainText(data.about?.overview),
+      )}</p><h2>${escapeHtml(blocksToPlainText(data.work?.heading?.title))}</h2>${listItems(
         data.work?.collection,
         (item) => `<strong>${escapeHtml(item.designation)}</strong> ${escapeHtml(item.description)}`,
       )}`;
-    case '/experiments':
-      return `<h1>${escapeHtml(
-        blocksToPlainText(data.experiments?.heading?.title),
-      )}</h1>${listItems(
-        data.experiments?.collection,
-        (item) => `<strong>${escapeHtml(item.heading)}</strong> ${escapeHtml(item.body)}`,
-      )}`;
-    case '/writings':
-      return `<h1>${escapeHtml(
-        blocksToPlainText(data.writings?.heading?.title),
-      )}</h1>${listItems(
+    case '/writing':
+      return `<h1>${escapeHtml(blocksToPlainText(data.writings?.heading?.title))}</h1>${listItems(
         data.writings?.collection,
         (item) => `<strong>${escapeHtml(item.heading)}</strong> ${escapeHtml(item.body)}`,
       )}`;
-    case '/talks':
-      return `<h1>${escapeHtml(blocksToPlainText(data.talks?.heading?.title))}</h1>${listItems(
-        data.talks?.collection,
-        (item) => `<strong>${escapeHtml(item.heading)}</strong> ${escapeHtml(item.body)}`,
-      )}`;
-    case '/contact':
-      return `<h1>${escapeHtml(
-        blocksToPlainText(data.contact?.heading?.title),
-      )}</h1><p>${escapeHtml(blocksToPlainText(data.contact?.text))}</p>`;
     default:
-      return '</main>';
+      return '';
   }
+};
+
+// Generated from the route table so the sitemap can never list a removed or
+// redirected URL (which would tell crawlers to fetch redirects).
+const writeSitemap = () => {
+  const urls = PORTFOLIO_ROUTES.map((route) => {
+    const { changefreq, priority } = ROUTE_META[route];
+    const loc = route === '/' ? `${SITE_URL}/` : `${SITE_URL}${route}`;
+    return `  <url>\n    <loc>${loc}</loc>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`;
+  }).join('\n');
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+  fs.writeFileSync(path.join(distDir, 'sitemap.xml'), xml);
+  console.log(`[prerender] Wrote sitemap.xml (${PORTFOLIO_ROUTES.length} URLs)`);
 };
 
 const applyRouteMeta = (html, route, meta) => {
@@ -216,6 +178,8 @@ const main = async () => {
     console.error('[prerender] dist/index.html not found. Run vite build first.');
     process.exit(1);
   }
+
+  writeSitemap();
 
   const baseHtml = fs.readFileSync(baseHtmlPath, 'utf8');
   const data = await fetchSanityData();

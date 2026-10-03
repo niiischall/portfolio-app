@@ -19,3 +19,16 @@ export const pageHeadingPortableTextComponents: PortableTextComponents = {
 };
 
 export default pageHeadingPortableTextComponents;
+
+/**
+ * For a section that sits below a page's <h1> (e.g. the work timeline on
+ * /about): any CMS heading level renders as <h2>, so the page keeps exactly
+ * one level-1 heading.
+ */
+export const sectionHeadingPortableTextComponents: PortableTextComponents = {
+  block: {
+    h1: ({ children }) => <h2>{children}</h2>,
+    h2: ({ children }) => <h2>{children}</h2>,
+    h3: ({ children }) => <h3>{children}</h3>,
+  },
+};

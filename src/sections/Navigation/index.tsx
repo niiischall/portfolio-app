@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useMemo, useCallback, useEffect, useRef, useState } from 'react';
 import type { TypedObject } from 'sanity';
 import { useLocation } from 'react-router-dom';
 
@@ -6,7 +6,7 @@ import { HeroSocialType, NavigationCollectionType } from '../../utils/helpers/ty
 import Button from '../../components/Button';
 import ThemeToggle from '../../components/ThemeToggle';
 import { urlForImage } from '../../lib/sanity.image';
-import { normalizePath } from '../../utils/helpers/routes';
+import { isExternalUrl, isLiveRoute, resolvePath } from '../../utils/helpers/routes';
 import { getLinkProps } from '../../utils/helpers/link-props';
 import { ANALYTICS_EVENTS } from '../../utils/helpers/analytics';
 
@@ -44,7 +44,19 @@ export interface NavigationProps {
 const MOBILE_MENU_ID = 'mobile-menu';
 
 const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
-  const { collection = [] } = data ?? {};
+  const { collection: rawCollection = [] } = data ?? {};
+  // Nav items live in Sanity. Drop any that point at a removed section, and
+  // collapse items that now resolve to the same page (work -> about).
+  const collection = useMemo(() => {
+    const seen = new Set<string>();
+    return rawCollection.filter((item: NavigationCollectionType) => {
+      const path = resolvePath(item.slug?.current);
+      if (!isExternalUrl(path) && !isLiveRoute(path)) return false;
+      if (seen.has(path)) return false;
+      seen.add(path);
+      return true;
+    });
+  }, [rawCollection]);
   const { cover } = hero ?? {};
   const [menuShowcase, setMenuShowcase] = useState<boolean>(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -114,7 +126,7 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
     if (collection.length === 0) return null;
 
     return collection.map((navItem: NavigationCollectionType) => {
-      const isCurrentLocation = currentPath === normalizePath(navItem.slug.current);
+      const isCurrentLocation = currentPath === resolvePath(navItem.slug.current);
       const linkProps = getLinkProps(navItem.slug.current);
 
       return (
@@ -129,7 +141,7 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
             analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
             analyticsProperties={{
               surface: 'mobile_menu',
-              destination: normalizePath(navItem.slug.current),
+              destination: resolvePath(navItem.slug.current),
               label: navItem.title,
             }}
           >
@@ -144,7 +156,7 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
     if (collection.length === 0) return null;
 
     return collection.map((navItem: NavigationCollectionType) => {
-      const isCurrentLocation = currentPath === normalizePath(navItem.slug.current);
+      const isCurrentLocation = currentPath === resolvePath(navItem.slug.current);
       const linkProps = getLinkProps(navItem.slug.current);
 
       return (
@@ -159,7 +171,7 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
               analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
               analyticsProperties={{
                 surface: 'header',
-                destination: normalizePath(navItem.slug.current),
+                destination: resolvePath(navItem.slug.current),
                 label: navItem.title,
               }}
             >

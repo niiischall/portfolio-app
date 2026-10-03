@@ -5,7 +5,7 @@ import type { TypedObject } from 'sanity';
 import Button from '../../components/Button';
 import { urlForImage } from '../../lib/sanity.image';
 import { getLinkProps } from '../../utils/helpers/link-props';
-import { normalizePath } from '../../utils/helpers/routes';
+import { isExternalUrl, isLiveRoute, resolvePath } from '../../utils/helpers/routes';
 import { ANALYTICS_EVENTS } from '../../utils/helpers/analytics';
 import type {
   FooterNavigationCollectionType,
@@ -28,9 +28,17 @@ const resolveFooterLinks = (
   footerLinks: FooterNavigationCollectionType[] | undefined,
   navigationLinks: NavigationCollectionType[] | undefined,
 ): FooterNavLink[] => {
-  if (footerLinks?.length) return footerLinks;
-  if (navigationLinks?.length) return navigationLinks;
-  return [];
+  const links = footerLinks?.length ? footerLinks : navigationLinks ?? [];
+  // CMS links may still point at removed sections or renamed routes; keep only
+  // live destinations, one link per page.
+  const seen = new Set<string>();
+  return links.filter((link) => {
+    const path = resolvePath(link.slug?.current);
+    if (!isExternalUrl(path) && !isLiveRoute(path)) return false;
+    if (seen.has(path)) return false;
+    seen.add(path);
+    return true;
+  });
 };
 
 const resolveFooterSocials = (
@@ -132,7 +140,7 @@ const Footer: React.FC<FooterProps> = ({ data, navigation, heroSocials }) => {
               <FooterLabel>pages</FooterLabel>
               <ul className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3 md:grid-cols-2">
                 {footerLinks.map((link) => {
-                  const isCurrent = pathname === normalizePath(link.slug.current);
+                  const isCurrent = pathname === resolvePath(link.slug.current);
                   return (
                     <li key={link._key}>
                       <Button
@@ -144,7 +152,7 @@ const Footer: React.FC<FooterProps> = ({ data, navigation, heroSocials }) => {
                         analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
                         analyticsProperties={{
                           surface: 'footer',
-                          destination: normalizePath(link.slug.current),
+                          destination: resolvePath(link.slug.current),
                           label: link.title,
                         }}
                       >

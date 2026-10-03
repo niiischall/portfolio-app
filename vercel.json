@@ -1,4 +1,26 @@
 {
+  "redirects": [
+    {
+      "source": "/writings",
+      "destination": "/writing",
+      "permanent": false
+    },
+    {
+      "source": "/writings/",
+      "destination": "/writing",
+      "permanent": false
+    },
+    {
+      "source": "/work",
+      "destination": "/about",
+      "permanent": false
+    },
+    {
+      "source": "/work/",
+      "destination": "/about",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/((?!api/).*)",

@@ -7,7 +7,7 @@ import Button from '../../components/Button';
 import { getLinkProps } from '../../utils/helpers/link-props';
 import { heroPortableTextComponents } from '../../components/portableText/hero';
 import { ANALYTICS_EVENTS } from '../../utils/helpers/analytics';
-import { normalizePath } from '../../utils/helpers/routes';
+import { isExternalUrl, isLiveRoute, resolvePath } from '../../utils/helpers/routes';
 
 export interface HeroProps {
   data: {
@@ -29,15 +29,22 @@ export interface HeroProps {
       _type: string;
     };
   };
+  /** Fallback target for a CTA that pointed at the removed /contact page. */
+  footerEmail?: string;
 }
 
-const Hero: React.FC<HeroProps> = ({ data }) => {
+const Hero: React.FC<HeroProps> = ({ data, footerEmail }) => {
   const { greeting } = data ?? {};
   const { link, text: greetingText = [] } = greeting ?? {};
   const { text: buttonText = '', slug } = link ?? {};
   const { current: buttonSlug = '' } = slug ?? {};
-  const ctaLinkProps = buttonSlug ? getLinkProps(buttonSlug) : null;
-  const ctaDestination = buttonSlug ? normalizePath(buttonSlug) : '';
+  // The CTA slug lives in Sanity. If it targets a route that no longer exists
+  // (it pointed at /contact, which was removed), send it to email instead —
+  // that's where contact moved — rather than linking to a 404.
+  const resolvedCta = buttonSlug ? resolvePath(buttonSlug) : '';
+  const ctaIsDead = Boolean(resolvedCta) && !isExternalUrl(resolvedCta) && !isLiveRoute(resolvedCta);
+  const ctaDestination = ctaIsDead ? (footerEmail ? `mailto:${footerEmail}` : '') : resolvedCta;
+  const ctaLinkProps = ctaDestination ? getLinkProps(ctaDestination) : null;
   const showAboutCrossLink = ctaDestination !== '/about';
   const heroBtnStyles = 'btn lowercase !mt-0';
 
@@ -58,7 +65,7 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
                 analyticsProperties={{
                   section: 'hero',
                   label: buttonText,
-                  destination: normalizePath(buttonSlug),
+                  destination: ctaDestination,
                 }}
               >
                 {buttonText}

@@ -73,7 +73,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   }
 
   if (href) {
-    const opensNewTab = external ?? isExternalHref(href);
+    // mailto:/tel: hand off to another app; a new tab would just be left empty.
+    const opensNewTab = (external ?? isExternalHref(href)) && /^https?:/i.test(href);
     return (
       <a
         href={href}
