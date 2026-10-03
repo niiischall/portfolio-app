@@ -22,11 +22,7 @@ export default {
       sans: ['"IBM Plex Sans"', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
       serif: ['Newsreader', 'Iowan Old Style', 'Palatino', 'Georgia', 'serif'],
     },
-    extend: {
-      letterSpacing: {
-        label: '0.12em',
-      },
-    },
+    extend: {},
   },
   plugins: [],
 };

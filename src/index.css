@@ -122,7 +122,7 @@
   }
   /* Tracked uppercase section label. Footer hand-rolled this; it now shares. */
   .label {
-    @apply font-sans text-xs font-bold uppercase tracking-label text-muted;
+    @apply font-sans text-xs font-bold uppercase tracking-[0.12em] text-muted;
   }
   .btn {
     @apply inline-flex items-center gap-1.5 mt-4 cursor-pointer rounded-sm border border-solid px-4 py-2
