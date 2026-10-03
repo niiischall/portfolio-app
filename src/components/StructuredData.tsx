@@ -2,6 +2,10 @@ import { useMemo } from 'react';
 
 import {
   OG_IMAGE_PATH,
+  PERSON_EMPLOYER,
+  PERSON_JOB_TITLE,
+  PERSON_KNOWS_ABOUT,
+  PERSON_LOCATION,
   PERSON_NAME,
   SITE_DESCRIPTION,
   SITE_NAME,
@@ -13,9 +17,12 @@ import type { WritingsCollectionType } from '../utils/helpers/types';
 interface StructuredDataProps {
   email?: string;
   writings?: WritingsCollectionType[];
+  /** Current route. BlogPosting nodes were previously emitted on every page,
+   *  including /contact; they belong only on the writing index. */
+  pathname?: string;
 }
 
-const StructuredData = ({ email, writings = [] }: StructuredDataProps) => {
+const StructuredData = ({ email, writings = [], pathname = '' }: StructuredDataProps) => {
   const jsonLd = useMemo(() => {
     const person: Record<string, unknown> = {
       '@type': 'Person',
@@ -23,6 +30,14 @@ const StructuredData = ({ email, writings = [] }: StructuredDataProps) => {
       name: PERSON_NAME,
       url: SITE_URL,
       image: `${SITE_URL}${OG_IMAGE_PATH}`,
+      jobTitle: PERSON_JOB_TITLE,
+      worksFor: { '@type': 'Organization', name: PERSON_EMPLOYER },
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: PERSON_LOCATION.city,
+        addressCountry: PERSON_LOCATION.country,
+      },
+      knowsAbout: [...PERSON_KNOWS_ABOUT],
       sameAs: [...SOCIAL_PROFILES],
     };
 
@@ -39,23 +54,35 @@ const StructuredData = ({ email, writings = [] }: StructuredDataProps) => {
       publisher: { '@id': `${SITE_URL}/#person` },
     };
 
-    const blogPosts = writings
-      .filter((item) => item.link && item.heading)
-      .map((item) => ({
-        '@type': 'BlogPosting',
-        headline: item.heading,
-        description: item.body,
-        url: item.link,
-        author: { '@id': `${SITE_URL}/#person` },
-        publisher: { '@id': `${SITE_URL}/#person` },
-        mainEntityOfPage: item.link,
-      }));
+    const isWritingRoute = /^\/writings?\/?$/.test(pathname);
+
+    const blogPosts = !isWritingRoute
+      ? []
+      : writings
+          .filter((item) => item.link && item.heading)
+          .map((item) => {
+            const post: Record<string, unknown> = {
+              '@type': 'BlogPosting',
+              headline: item.heading,
+              description: item.body,
+              url: item.link,
+              author: { '@id': `${SITE_URL}/#person` },
+              publisher: { '@id': `${SITE_URL}/#person` },
+              mainEntityOfPage: item.link,
+            };
+            // Google largely ignores dateless articles. Populated once
+            // publishedAt is backfilled in Studio.
+            if (item.publishedAt) {
+              post.datePublished = item.publishedAt;
+            }
+            return post;
+          });
 
     return {
       '@context': 'https://schema.org',
       '@graph': [person, website, ...blogPosts],
     };
-  }, [email, writings]);
+  }, [email, writings, pathname]);
 
   return (
     <script

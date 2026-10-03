@@ -162,6 +162,8 @@ export type WritingsCollectionType = {
   body: string;
   link: string;
   image: Image;
+  /** Optional ISO date (YYYY-MM-DD) set in Studio. */
+  publishedAt?: string;
 };
 
 export interface WritingsContextType {

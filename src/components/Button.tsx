@@ -19,6 +19,9 @@ export interface ButtonProps {
   ariaLabel?: string;
   ariaExpanded?: boolean;
   ariaControls?: string;
+  /** Pass 'page' on the nav link for the current route (WCAG 1.4.1: the active
+   *  state was previously conveyed by colour alone). */
+  ariaCurrent?: 'page';
 }
 
 const isExternalHref = (href: string) =>
@@ -41,6 +44,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function Button(
     ariaLabel,
     ariaExpanded,
     ariaControls,
+    ariaCurrent,
   },
   ref,
 ) {
@@ -62,7 +66,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function Button(
 
   if (to) {
     return (
-      <Link to={to} className={styles} onClick={handleLinkClick} aria-label={ariaLabel}>
+      <Link to={to} className={styles} onClick={handleLinkClick} aria-label={ariaLabel} aria-current={ariaCurrent}>
         {children}
       </Link>
     );
@@ -76,6 +80,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function Button(
         className={mergeStyles(styles, opensNewTab ? 'external-link' : undefined)}
         onClick={handleLinkClick}
         aria-label={ariaLabel}
+        aria-current={ariaCurrent}
         {...(opensNewTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
       >
         {children}

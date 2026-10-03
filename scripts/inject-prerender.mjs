@@ -99,41 +99,41 @@ const listItems = (items, renderItem) =>
 const renderRouteSnapshot = (route, data) => {
   switch (route) {
     case '/':
-      return `<main id="main-content">${renderBlocksHtml(data.hero?.greeting?.text)}</main>`;
+      return `${renderBlocksHtml(data.hero?.greeting?.text)}`;
     case '/about':
-      return `<main id="main-content"><h1>${escapeHtml(
+      return `<h1>${escapeHtml(
         blocksToPlainText(data.about?.heading?.title),
-      )}</h1><p>${escapeHtml(blocksToPlainText(data.about?.overview))}</p></main>`;
+      )}</h1><p>${escapeHtml(blocksToPlainText(data.about?.overview))}</p>`;
     case '/work':
-      return `<main id="main-content"><h1>${escapeHtml(blocksToPlainText(data.work?.heading?.title))}</h1>${listItems(
+      return `<h1>${escapeHtml(blocksToPlainText(data.work?.heading?.title))}</h1>${listItems(
         data.work?.collection,
         (item) => `<strong>${escapeHtml(item.designation)}</strong> ${escapeHtml(item.description)}`,
-      )}</main>`;
+      )}`;
     case '/experiments':
-      return `<main id="main-content"><h1>${escapeHtml(
+      return `<h1>${escapeHtml(
         blocksToPlainText(data.experiments?.heading?.title),
       )}</h1>${listItems(
         data.experiments?.collection,
         (item) => `<strong>${escapeHtml(item.heading)}</strong> ${escapeHtml(item.body)}`,
-      )}</main>`;
+      )}`;
     case '/writings':
-      return `<main id="main-content"><h1>${escapeHtml(
+      return `<h1>${escapeHtml(
         blocksToPlainText(data.writings?.heading?.title),
       )}</h1>${listItems(
         data.writings?.collection,
         (item) => `<strong>${escapeHtml(item.heading)}</strong> ${escapeHtml(item.body)}`,
-      )}</main>`;
+      )}`;
     case '/talks':
-      return `<main id="main-content"><h1>${escapeHtml(blocksToPlainText(data.talks?.heading?.title))}</h1>${listItems(
+      return `<h1>${escapeHtml(blocksToPlainText(data.talks?.heading?.title))}</h1>${listItems(
         data.talks?.collection,
         (item) => `<strong>${escapeHtml(item.heading)}</strong> ${escapeHtml(item.body)}`,
-      )}</main>`;
+      )}`;
     case '/contact':
-      return `<main id="main-content"><h1>${escapeHtml(
+      return `<h1>${escapeHtml(
         blocksToPlainText(data.contact?.heading?.title),
-      )}</h1><p>${escapeHtml(blocksToPlainText(data.contact?.text))}</p></main>`;
+      )}</h1><p>${escapeHtml(blocksToPlainText(data.contact?.text))}</p>`;
     default:
-      return '<main id="main-content"></main>';
+      return '</main>';
   }
 };
 

@@ -6,6 +6,7 @@ import Button from './Button';
 import Click from '../utils/svgs/Click';
 import { urlForImage } from '../lib/sanity.image';
 import { ANALYTICS_EVENTS } from '../utils/helpers/analytics';
+import { pageHeadingPortableTextComponents } from './portableText/pageHeading';
 
 export type PortfolioGridItem = {
   _key: string;
@@ -83,7 +84,7 @@ const PortfolioGridSection: React.FC<PortfolioGridSectionProps> = ({
   <section className="pt-12 pb-24 px-4 md:px-8" id={id}>
     <div className="flex flex-col justify-center items-start space-y-24 max-w-4xl md:mx-auto">
       <div className="text-left p-0 w-full">
-        <PortableText value={title} />
+        <PortableText value={title} components={pageHeadingPortableTextComponents} />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-16 w-full">
         {collection.map((item) => (

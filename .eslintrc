@@ -14,8 +14,15 @@
     },
     "import/resolver": {
       "node": {
-        "paths": ["src"],
-        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+        "paths": [
+          "src"
+        ],
+        "extensions": [
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx"
+        ]
       }
     }
   },
@@ -33,13 +40,20 @@
   },
   "overrides": [
     {
-      "files": ["src/sanity/**/*.ts", "src/sanity/**/*.tsx", "sanity.config.ts"],
+      "files": [
+        "src/sanity/**/*.ts",
+        "src/sanity/**/*.tsx",
+        "sanity.config.ts"
+      ],
       "rules": {
-        "import/named": "off"
+        "import/named": "off",
+        "import/no-unresolved": "off"
       }
     },
     {
-      "files": ["scripts/**/*.mjs"],
+      "files": [
+        "scripts/**/*.mjs"
+      ],
       "env": {
         "node": true
       },

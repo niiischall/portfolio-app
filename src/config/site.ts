@@ -18,3 +18,27 @@ export const SOCIAL_PROFILES = [
   'https://www.linkedin.com/in/niiischall',
   'https://x.com/niiischall',
 ] as const;
+
+/**
+ * Facts about the person, used to make the schema.org Person entity
+ * resolvable. A Person with only a name and a URL is not much use to a
+ * knowledge graph. All of these are already stated on the site.
+ */
+export const PERSON_JOB_TITLE = 'Senior UI Engineer';
+
+export const PERSON_EMPLOYER = 'Acko';
+
+export const PERSON_LOCATION = {
+  city: 'Bengaluru',
+  country: 'India',
+} as const;
+
+export const PERSON_KNOWS_ABOUT = [
+  'React',
+  'React Native',
+  'TypeScript',
+  'Next.js',
+  'Front-end architecture',
+  'Design systems',
+  'Web performance',
+] as const;

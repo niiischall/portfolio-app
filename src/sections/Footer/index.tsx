@@ -22,22 +22,15 @@ type FooterNavLink = {
   };
 };
 
-const DEFAULT_FOOTER_LINKS: FooterNavLink[] = [
-  { _key: 'about', title: 'about', slug: { current: '/about' } },
-  { _key: 'work', title: 'work', slug: { current: '/work' } },
-  { _key: 'experiments', title: 'experiments', slug: { current: '/experiments' } },
-  { _key: 'writings', title: 'blogs', slug: { current: '/writings' } },
-  { _key: 'talks', title: 'talks', slug: { current: '/talks' } },
-  { _key: 'contact', title: 'contact', slug: { current: '/contact' } },
-];
-
+// No hardcoded fallback: a stale literal route list here is one more place for
+// route names to drift out of sync. If the CMS has no links, render none.
 const resolveFooterLinks = (
   footerLinks: FooterNavigationCollectionType[] | undefined,
   navigationLinks: NavigationCollectionType[] | undefined,
 ): FooterNavLink[] => {
   if (footerLinks?.length) return footerLinks;
   if (navigationLinks?.length) return navigationLinks;
-  return DEFAULT_FOOTER_LINKS;
+  return [];
 };
 
 const resolveFooterSocials = (
@@ -70,7 +63,7 @@ const FooterLabel: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 
 const Footer: React.FC<FooterProps> = ({ data, navigation, heroSocials }) => {
   const { pathname } = useLocation();
-  const { copyright = '', socials = [], collection = [] } = data ?? {};
+  const { email = '', copyright = '', socials = [], collection = [] } = data ?? {};
   const currentYear = new Date().getFullYear();
   const copyrightText = copyright.replace(/\b20\d{2}\b/, String(currentYear));
 
@@ -90,31 +83,91 @@ const Footer: React.FC<FooterProps> = ({ data, navigation, heroSocials }) => {
     <footer className="px-4 pb-12 pt-4 md:px-8 md:pb-16 bg-light" aria-label="Site footer">
       <div className="max-w-4xl mx-auto border-t border-primary pt-10 md:pt-12">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-8 lg:gap-12">
-          {footerSocials.length > 0 ? (
-            <div className="md:col-span-5">
-              <FooterLabel>connect</FooterLabel>
-              <div className="flex flex-row flex-wrap items-center gap-3" aria-label="Social links">
-                {footerSocials.map((social) => (
-                  <Button
-                    key={social._key}
-                    href={social.url}
-                    external
-                    styles="icon-link min-w-[44px] min-h-[44px] flex items-center justify-center"
-                    analyticsEvent={ANALYTICS_EVENTS.EXTERNAL_CLICK}
-                    analyticsProperties={{ section: 'footer', surface: 'social', url: social.url }}
-                    ariaLabel={social.alt || social.caption}
-                  >
-                    <img
-                      className="w-6 h-6 object-contain"
-                      src={urlForImage(social.cover)?.width(24).url()}
-                      alt=""
-                      aria-hidden="true"
-                    />
-                  </Button>
-                ))}
+          <div className="md:col-span-5">
+            {footerSocials.length > 0 ? (
+              <>
+                <FooterLabel>connect</FooterLabel>
+                <div className="flex flex-row flex-wrap items-center gap-3" aria-label="Social links">
+                  {footerSocials.map((social) => (
+                    <Button
+                      key={social._key}
+                      href={social.url}
+                      external
+                      styles="icon-link min-w-[44px] min-h-[44px] flex items-center justify-center"
+                      analyticsEvent={ANALYTICS_EVENTS.EXTERNAL_CLICK}
+                      analyticsProperties={{ section: 'footer', surface: 'social', url: social.url }}
+                      ariaLabel={social.alt || social.caption}
+                    >
+                      <img
+                        className="w-6 h-6 object-contain"
+                        src={urlForImage(social.cover)?.width(24).url()}
+                        alt=""
+                        aria-hidden="true"
+                      />
+                    </Button>
+                  ))}
+                </div>
+              </>
+            ) : null}
+
+            {/* The address was previously only in the JSON-LD, i.e. readable by
+                scrapers but not by people. This is the site's contact path. */}
+            {email ? (
+              <div className="mt-8">
+                <FooterLabel>email</FooterLabel>
+                <Button
+                  href={`mailto:${email}`}
+                  styles="text-link text-base font-sans text-primary hover:text-secondary transition-colors rounded-sm"
+                  analyticsEvent={ANALYTICS_EVENTS.EXTERNAL_CLICK}
+                  analyticsProperties={{ section: 'footer', surface: 'email', url: `mailto:${email}` }}
+                >
+                  {email}
+                </Button>
               </div>
-            </div>
+            ) : null}
+          </div>
+
+          {footerLinks.length > 0 ? (
+            <nav className="md:col-span-7" aria-label="Footer navigation">
+              <FooterLabel>pages</FooterLabel>
+              <ul className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3 md:grid-cols-2">
+                {footerLinks.map((link) => {
+                  const isCurrent = pathname === normalizePath(link.slug.current);
+                  return (
+                    <li key={link._key}>
+                      <Button
+                        {...getLinkProps(link.slug.current)}
+                        styles={`text-base font-sans lowercase transition-colors hover:text-secondary ${
+                          isCurrent ? 'text-secondary' : 'text-primary'
+                        }`}
+                        ariaCurrent={isCurrent ? 'page' : undefined}
+                        analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
+                        analyticsProperties={{
+                          surface: 'footer',
+                          destination: normalizePath(link.slug.current),
+                          label: link.title,
+                        }}
+                      >
+                        {link.title}
+                      </Button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
           ) : null}
+        </div>
+
+        <div className="mt-10 pt-6 border-t border-gray flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          {copyrightText ? <p className="text-sm font-sans text-primary opacity-70">{copyrightText}</p> : null}
+          <Button
+            onClick={scrollToTop}
+            styles="text-sm font-sans text-primary hover:text-secondary transition-colors self-start sm:self-auto rounded-sm"
+            analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
+            analyticsProperties={{ surface: 'footer', destination: '#top', label: 'back to top' }}
+          >
+            back to top ↑
+          </Button>
         </div>
       </div>
     </footer>

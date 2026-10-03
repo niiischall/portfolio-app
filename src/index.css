@@ -180,6 +180,12 @@
   .header-icon-btn {
     @apply flex h-11 w-11 shrink-0 items-center justify-center focus:outline-none;
   }
+  /* focus:outline-none above removes the ring for every consumer; ThemeToggle
+     adds its own, the hamburger did not. Restore it for keyboard users. */
+  .header-icon-btn:focus-visible {
+    outline: 2px solid rgb(var(--color-secondary));
+    outline-offset: 2px;
+  }
 }
 
 /*Custom styling*/

@@ -125,6 +125,7 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
               isCurrentLocation ? 'text-secondary' : 'text-primary'
             }`}
             onClick={closeMobileMenu}
+            ariaCurrent={isCurrentLocation ? 'page' : undefined}
             analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
             analyticsProperties={{
               surface: 'mobile_menu',
@@ -154,6 +155,7 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
               styles={`text-xl font-sans font-bold px-4 duration-200 text-primary hover:text-secondary ${
                 isCurrentLocation ? 'text-secondary' : 'text-primary'
               }`}
+              ariaCurrent={isCurrentLocation ? 'page' : undefined}
               analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
               analyticsProperties={{
                 surface: 'header',

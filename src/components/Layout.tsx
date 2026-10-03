@@ -46,6 +46,7 @@ const PortfolioLayout = () => {
         <div className="min-h-screen flex flex-col bg-light">
         <main
           id="main-content"
+          tabIndex={-1}
           className="flex-1 flex items-center justify-center px-4 text-center"
         >
           <p className="font-ovo text-primary max-w-md">
@@ -60,9 +61,13 @@ const PortfolioLayout = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <PageMeta meta={routeMeta} pathname={pathname} />
-      <StructuredData email={data?.footer?.email} writings={data?.writings?.collection} />
+      <StructuredData
+        email={data?.footer?.email}
+        writings={data?.writings?.collection}
+        pathname={pathname}
+      />
       <Navigation data={data?.navigation} hero={data?.hero} />
-      <main id="main-content" className="flex-1 flex flex-col bg-light">
+      <main id="main-content" tabIndex={-1} className="flex-1 flex flex-col bg-light">
         <Routes>
           <Route path="/" Component={() => <Hero data={data?.hero} />} />
           <Route path="/about" Component={() => <About data={data?.about} />} />

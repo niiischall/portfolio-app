@@ -9,6 +9,7 @@ import type { TypedObject } from 'sanity';
 import Button from '../../components/Button';
 import Click from '../../utils/svgs/Click';
 import { ANALYTICS_EVENTS } from '../../utils/helpers/analytics';
+import { pageHeadingPortableTextComponents } from '../../components/portableText/pageHeading';
 
 export interface WorkProps {
   data: {
@@ -82,7 +83,7 @@ const Work: React.FC<WorkProps> = ({ data }) => {
       className="px-4 pt-12 pb-24 px-relative flex flex-col justify-center items-start space-y-8 md:px-8 md:items-left md:mx-auto"
     >
       <div className="text-left p-0">
-        <PortableText value={title} />
+        <PortableText value={title} components={pageHeadingPortableTextComponents} />
       </div>
       <div className="max-w-4xl md:mx-auto">
         <div className="w-full pt-10 px-0 relative overflow-hidden">{renderCollection()}</div>
