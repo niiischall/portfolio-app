@@ -101,7 +101,7 @@ export default defineType({
               type: 'string',
               name: 'meta',
               title: 'Team & location',
-              description: 'Optional line under the role, e.g. "Health & Life Insurance · Bengaluru".',
+              description: 'Optional line under the role, e.g. "Health & Life Insurance · Bangalore, India".',
             }),
             defineField({
               // `text` rather than `string`: a string input is single-line, so

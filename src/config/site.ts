@@ -22,12 +22,12 @@ export const SOCIAL_PROFILES = [
  * resolvable. A Person with only a name and a URL is not much use to a
  * knowledge graph. All of these are already stated on the site.
  */
-export const PERSON_JOB_TITLE = 'Senior UI Engineer';
+export const PERSON_JOB_TITLE = 'Product Engineer';
 
 export const PERSON_EMPLOYER = 'Acko';
 
 export const PERSON_LOCATION = {
-  city: 'Bengaluru',
+  city: 'Bangalore',
   country: 'India',
 } as const;
 
