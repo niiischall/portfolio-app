@@ -74,7 +74,11 @@ const PortfolioLayout = () => {
             path="/about"
             Component={() => (
               <>
-                <About data={data?.about} />
+                <About
+                  data={data?.about}
+                  socials={resolveSocials(data?.footer?.socials, data?.hero?.socials)}
+                  email={data?.footer?.email}
+                />
                 <Work data={data?.work} />
               </>
             )}

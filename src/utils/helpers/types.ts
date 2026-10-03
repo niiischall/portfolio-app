@@ -91,6 +91,8 @@ export interface WorkCollectionType {
   };
   description: string;
   designation: string;
+  /** Optional "team · location" line. */
+  meta?: string;
   duration: {
     _type: string;
     start: string;

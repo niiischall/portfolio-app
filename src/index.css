@@ -115,6 +115,21 @@
   span {
     font: inherit;
   }
+  /* About intro: serif prose with a drop cap on the opening paragraph.
+     The global p rule sets sans/size, so the prose resets both. */
+  .about-prose p {
+    font: inherit;
+    margin-bottom: 1.25em;
+  }
+  .about-prose p:first-of-type::first-letter {
+    float: left;
+    font-family: Newsreader, Georgia, serif;
+    font-weight: 200;
+    font-size: 4.2em;
+    line-height: 0.8;
+    margin: 0.07em 0.12em 0 0;
+    color: rgb(var(--color-muted));
+  }
   /* Tracked uppercase section label. Footer hand-rolled this; it now shares. */
   .label {
     @apply font-sans text-xs font-bold uppercase tracking-[0.12em] text-muted;
@@ -145,10 +160,6 @@
   .btn span {
     font: inherit;
     color: inherit;
-  }
-  /* Follows the surrounding text rather than the accent. */
-  .external-link-icon {
-    color: currentColor;
   }
   a.external-link {
     transition:
@@ -312,8 +323,7 @@
 
   .btn,
   a.external-link,
-  a.external-link.icon-link,
-  .external-link-icon {
+  a.external-link.icon-link {
     transition: none;
   }
 

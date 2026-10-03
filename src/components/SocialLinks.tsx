@@ -25,7 +25,7 @@ const NETWORKS: { match: RegExp; name: string; Icon: Icon }[] = [
   { match: /(^|\.)github\.com$/, name: 'GitHub', Icon: GithubLogo },
 ];
 
-const networkFor = (url: string) => {
+export const networkFor = (url: string) => {
   try {
     const host = new URL(url).hostname;
     return NETWORKS.find((network) => network.match.test(host));

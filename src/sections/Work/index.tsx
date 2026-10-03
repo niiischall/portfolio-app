@@ -1,7 +1,6 @@
 import React from 'react';
 import { PortableText } from '@portabletext/react';
 
-import { urlForImage } from '../../lib/sanity.image';
 import { WorkCollectionType } from '../../utils/helpers/types';
 import type { TypedObject } from 'sanity';
 import Button from '../../components/Button';
@@ -17,6 +16,14 @@ export interface WorkProps {
   };
 }
 
+// Highlights are entered one per line in Studio. A single line (how the
+// existing entries are written) stays a paragraph.
+const toHighlights = (description = '') =>
+  description
+    .split('\n')
+    .map((line) => line.replace(/^\s*[-•*]\s*/, '').trim())
+    .filter(Boolean);
+
 /** The work timeline, rendered as a section of /about. */
 const Work: React.FC<WorkProps> = ({ data }) => {
   const { heading, collection = [] } = data ?? {};
@@ -25,67 +32,76 @@ const Work: React.FC<WorkProps> = ({ data }) => {
   return (
     <section id="work" className="px-4 pb-24 md:px-8">
       <div className="max-w-4xl md:mx-auto">
-        <div className="mb-10">
+        <div className="mb-12">
           <PortableText value={title} components={sectionHeadingPortableTextComponents} />
         </div>
 
-        <ol className="ml-1 border-l border-rule">
+        <ol className="ml-[7px] border-l border-rule">
           {collection.map((item, index) => {
-            const { designation = '', description = '', link, cover, duration } = item ?? {};
+            const { designation = '', description = '', meta = '', link, duration } = item ?? {};
             const { name: orgName = '', href: orgLink = '' } = link ?? {};
             const { start = '', end = '' } = duration ?? {};
-            const logo = cover ? urlForImage(cover)?.width(40).height(40).url() : undefined;
+            const highlights = toHighlights(description);
+            const isCurrent = index === 0;
 
             return (
-              <li key={item._key} className="relative pb-12 pl-8 last:pb-0">
-                {/* Rail marker; the current role is filled. */}
+              <li key={item._key} className="relative pb-14 pl-9 last:pb-0">
+                {/* Rail marker: the current role is filled with a soft halo,
+                    past roles are hollow rings. */}
                 <span
                   aria-hidden="true"
-                  className={`absolute -left-[5px] top-[0.55rem] h-[9px] w-[9px] rounded-full border ${
-                    index === 0 ? 'border-primary bg-primary' : 'border-muted bg-light'
+                  className={`absolute -left-[7px] top-[0.35rem] h-[13px] w-[13px] rounded-full ${
+                    isCurrent ? 'bg-primary ring-4 ring-primary/20' : 'border-2 border-muted bg-light'
                   }`}
                 />
 
                 {start || end ? (
-                  <p className="text-sm tracking-wide text-muted">
+                  <p className="font-[ui-monospace,SFMono-Regular,Menlo,monospace] text-[0.8125rem] tracking-[0.04em] text-muted">
                     {start}
                     {end ? ` – ${end}` : ''}
                   </p>
                 ) : null}
 
-                <h3 className="mt-1 font-sans text-[1.125rem] font-semibold leading-snug">
+                <h3 className="mt-2 font-sans text-[1.1875rem] font-semibold leading-snug">
                   {designation}
                   {orgName ? (
                     <>
                       <span className="font-normal text-muted"> at </span>
-                      <span className="inline-flex items-center gap-1.5 align-baseline">
-                        {logo ? (
-                          <img
-                            src={logo}
-                            alt=""
-                            className="h-5 w-5 self-center rounded-sm object-cover"
-                            loading="lazy"
-                          />
-                        ) : null}
-                        {orgLink ? (
-                          <Button
-                            href={orgLink}
-                            styles="text-primary underline decoration-muted underline-offset-4 hover:decoration-current rounded-sm"
-                            analyticsEvent={ANALYTICS_EVENTS.EXTERNAL_CLICK}
-                            analyticsProperties={{ section: 'work', label: orgName, url: orgLink }}
-                          >
-                            {orgName}
-                            <span className="sr-only"> (opens in a new tab)</span>
-                          </Button>
-                        ) : (
-                          orgName
-                        )}
-                      </span>
+                      {orgLink ? (
+                        <Button
+                          href={orgLink}
+                          styles="underline decoration-muted underline-offset-4 hover:decoration-current rounded-sm"
+                          analyticsEvent={ANALYTICS_EVENTS.EXTERNAL_CLICK}
+                          analyticsProperties={{ section: 'work', label: orgName, url: orgLink }}
+                        >
+                          {orgName}
+                          <span className="sr-only"> (opens in a new tab)</span>
+                        </Button>
+                      ) : (
+                        orgName
+                      )}
                     </>
                   ) : null}
                 </h3>
 
-                {description ? <p className="mt-3 max-w-2xl text-base text-primary/90">{description}</p> : null}
+                {meta ? <p className="mt-1 text-[0.9375rem] text-muted">{meta}</p> : null}
+
+                {highlights.length > 1 ? (
+                  <ul className="mt-4 max-w-2xl space-y-2.5">
+                    {highlights.map((line) => (
+                      <li
+                        key={line}
+                        className="relative pl-6 font-serif text-[1.0625rem] leading-relaxed text-primary/90 before:absolute before:left-0 before:top-[0.6em] before:h-[7px] before:w-[7px] before:rounded-full before:border before:border-muted"
+                      >
+                        {line}
+                      </li>
+                    ))}
+                  </ul>
+                ) : highlights.length === 1 ? (
+                  <p className="mt-4 max-w-2xl font-serif text-[1.0625rem] leading-relaxed text-primary/90">
+                    {highlights[0]}
+                  </p>
+                ) : null}
               </li>
             );
           })}

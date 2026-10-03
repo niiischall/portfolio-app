@@ -36,6 +36,7 @@ export const workQuery = `*[_type == "work"][0]{
     _key,
     title,
     designation,
+    meta,
     link,
     duration,
     description,
