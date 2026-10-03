@@ -1,11 +1,11 @@
 import React, { useMemo, useCallback, useEffect, useRef, useState } from 'react';
-import type { TypedObject } from 'sanity';
 import { useLocation } from 'react-router-dom';
 
-import { HeroSocialType, NavigationCollectionType } from '../../utils/helpers/types';
+import type { FooterSocialType, NavigationCollectionType } from '../../utils/helpers/types';
 import Button from '../../components/Button';
 import ThemeToggle from '../../components/ThemeToggle';
-import { urlForImage } from '../../lib/sanity.image';
+import SocialLinks from '../../components/SocialLinks';
+import { PERSON_NAME } from '../../config/site';
 import { isExternalUrl, isLiveRoute, resolvePath } from '../../utils/helpers/routes';
 import { getLinkProps } from '../../utils/helpers/link-props';
 import { ANALYTICS_EVENTS } from '../../utils/helpers/analytics';
@@ -20,30 +20,12 @@ export interface NavigationProps {
     };
     collection: NavigationCollectionType[];
   };
-  hero: {
-    socials: HeroSocialType[];
-    greeting: {
-      link: {
-        text: string;
-        slug: {
-          current: string;
-        };
-      };
-      text: TypedObject[];
-    };
-    cover: {
-      asset: {
-        _type: string;
-        _ref: string;
-      };
-      _type: string;
-    };
-  };
+  socials?: FooterSocialType[];
 }
 
 const MOBILE_MENU_ID = 'mobile-menu';
 
-const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
+const Navigation: React.FC<NavigationProps> = ({ data, socials = [] }) => {
   const { collection: rawCollection = [] } = data ?? {};
   // Nav items live in Sanity. Drop any that point at a removed section, and
   // collapse items that now resolve to the same page (work -> about).
@@ -57,7 +39,6 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
       return true;
     });
   }, [rawCollection]);
-  const { cover } = hero ?? {};
   const [menuShowcase, setMenuShowcase] = useState<boolean>(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuPanelRef = useRef<HTMLDivElement>(null);
@@ -134,7 +115,7 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
           <Button
             {...linkProps}
             styles={`text-2xl font-sans font-bold px-4 hover:underline underline-offset-4 decoration-muted ${
-              isCurrentLocation ? 'text-secondary' : 'text-primary'
+              isCurrentLocation ? 'font-semibold text-primary' : 'text-muted hover:text-primary'
             }`}
             onClick={closeMobileMenu}
             ariaCurrent={isCurrentLocation ? 'page' : undefined}
@@ -165,7 +146,7 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
             <Button
               {...linkProps}
               styles={`text-base font-sans px-3 hover:underline underline-offset-4 decoration-muted rounded-sm ${
-                isCurrentLocation ? 'text-secondary' : 'text-primary'
+                isCurrentLocation ? 'font-semibold text-primary' : 'text-muted hover:text-primary'
               }`}
               ariaCurrent={isCurrentLocation ? 'page' : undefined}
               analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
@@ -183,35 +164,26 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
     });
   }, [collection, currentPath]);
 
-  const profileImageUrl = cover?.asset?._ref ? urlForImage(cover)?.width(128).height(128).url() : undefined;
-
   return (
     <header className="px-4 py-3 md:px-8 md:py-4 transition-colors duration-200">
       <div className="max-w-4xl mx-auto w-full">
         <nav className="relative flex w-full items-center justify-between" aria-label="Main navigation">
-          <div className="shrink-0 w-10 h-10 md:w-12 md:h-12">
-            {profileImageUrl ? (
-              <Button
-                to="/"
-                styles="block w-full h-full rounded-full"
-                ariaLabel="Nischal Nikit — home"
-                analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
-                analyticsProperties={{
-                  surface: 'header',
-                  destination: '/',
-                  label: 'profile',
-                }}
-              >
-                <img className="w-full h-full object-cover rounded-full" src={profileImageUrl} alt="" />
-              </Button>
-            ) : null}
-          </div>
+          <Button
+            to="/"
+            styles="shrink-0 font-serif text-[1.375rem] leading-none text-primary rounded-sm"
+            ariaLabel={`${PERSON_NAME} — home`}
+            analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
+            analyticsProperties={{ surface: 'header', destination: '/', label: 'wordmark' }}
+          >
+            {PERSON_NAME}
+          </Button>
 
           <ul className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 md:flex space-x-2">
             {renderNavigationItems()}
           </ul>
 
-          <div className="flex shrink-0 items-center">
+          <div className="flex shrink-0 items-center gap-3">
+            <SocialLinks socials={socials} surface="header" iconSize={22} className="hidden lg:flex" />
             <ThemeToggle />
             <Button
               ref={menuButtonRef}

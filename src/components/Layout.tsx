@@ -9,6 +9,7 @@ import Writings from '../sections/Writings';
 import NotFound from '../sections/NotFound';
 import Footer from '../sections/Footer';
 import PageSkeleton from './PageSkeleton';
+import { resolveSocials } from './SocialLinks';
 import PageMeta from './PageMeta';
 import StructuredData from './StructuredData';
 
@@ -64,7 +65,7 @@ const PortfolioLayout = () => {
         writings={data?.writings?.collection}
         pathname={pathname}
       />
-      <Navigation data={data?.navigation} hero={data?.hero} />
+      <Navigation data={data?.navigation} socials={resolveSocials(data?.footer?.socials, data?.hero?.socials)} />
       <main id="main-content" tabIndex={-1} className="flex-1 flex flex-col bg-light">
         <Routes>
           <Route path="/" Component={() => <Hero data={data?.hero} footerEmail={data?.footer?.email} writings={data?.writings?.collection} />} />

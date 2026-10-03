@@ -216,7 +216,7 @@
   left: 0;
   width: 24px;
   height: 2px;
-  background-color: rgb(var(--color-secondary));
+  background-color: rgb(var(--color-primary));
   transform-origin: center;
   transition:
     transform 0.25s ease,
