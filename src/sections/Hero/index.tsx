@@ -73,12 +73,13 @@ const Hero: React.FC<HeroProps> = ({ data, writings = [] }) => {
     .filter(Boolean)
     .join(' ');
 
-  const inlineLink = 'text-primary underline decoration-muted underline-offset-4 hover:decoration-current rounded-sm';
+  const inlineLink =
+    'whitespace-nowrap text-primary underline decoration-muted underline-offset-4 hover:decoration-current rounded-sm';
 
   return (
     <section className="relative w-full md:mx-auto px-4 pt-12 pb-24 flex-1 md:px-8 md:pt-20" id="home">
       <div className="max-w-4xl md:mx-auto">
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:gap-10">
+        <div className="flex flex-col gap-6 sm:max-w-[75%] sm:flex-row sm:items-center sm:gap-10">
           {portraitUrl ? (
             // Above the fold, so load it eagerly and give it fixed dimensions
             // (no layout shift).
@@ -92,11 +93,11 @@ const Hero: React.FC<HeroProps> = ({ data, writings = [] }) => {
               className="h-24 w-24 shrink-0 rounded-full object-cover ring-1 ring-rule sm:h-36 sm:w-36"
             />
           ) : null}
-          <div className="max-w-2xl min-w-0">
+          <div className="min-w-0">
             {headline ? <h1>{headline}</h1> : null}
 
             {/* Onward links sit inline in the prose instead of as buttons. */}
-            <p className="mt-6 font-serif text-[1.25rem] leading-[1.65] text-primary/80 md:text-[1.375rem]">
+            <p className="mt-6 font-serif text-[1.25rem] leading-[1.65] text-primary/80 [text-wrap:pretty] md:text-[1.375rem]">
               {intro ? `${intro} ` : null}
               Read my{' '}
               <Button
