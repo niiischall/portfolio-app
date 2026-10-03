@@ -1,13 +1,10 @@
 import React from 'react';
 import { PortableText } from '@portabletext/react';
 
-import Building from '../../utils/svgs/Building';
-import Clock from '../../utils/svgs/Clock';
 import { urlForImage } from '../../lib/sanity.image';
 import { WorkCollectionType } from '../../utils/helpers/types';
 import type { TypedObject } from 'sanity';
 import Button from '../../components/Button';
-import Click from '../../utils/svgs/Click';
 import { ANALYTICS_EVENTS } from '../../utils/helpers/analytics';
 import { sectionHeadingPortableTextComponents } from '../../components/portableText/pageHeading';
 
@@ -20,73 +17,79 @@ export interface WorkProps {
   };
 }
 
+/** The work timeline, rendered as a section of /about. */
 const Work: React.FC<WorkProps> = ({ data }) => {
   const { heading, collection = [] } = data ?? {};
   const { title = [] } = heading ?? {};
 
-  const renderCollection = () => {
-    return collection.map((item: WorkCollectionType) => {
-      const { designation = '', description = '', link, cover, duration } = item ?? {};
-      const { name: orgName = '', href: orgLink = '' } = link ?? {};
-      const { start = '', end = '' } = duration ?? {};
-
-      return (
-        <div key={item._key} className="relative">
-          <div className="w-full h-full flex justify-between">
-            <div className="absolute top-0 left-[3%] w-[2px] min-h-full bg-primary" />
-            <div className="mt-8 z-10">
-              <img
-                className="border-solid border-2 border-primary"
-                src={urlForImage(cover)?.width(48).height(48).url()}
-                alt={orgName}
-                loading="lazy"
-              />
-            </div>
-            <div className="w-[95%] p-8">
-              <h3 className="font-sans font-bold">{designation}</h3>
-              <div className="flex items-center space-x-1">
-                <Building />
-                {orgLink ? (
-                  <Button
-                    href={orgLink}
-                    external
-                    styles="text-link text-secondary font-bold rounded-sm px-1 -mx-1 transition-colors"
-                    analyticsEvent={ANALYTICS_EVENTS.EXTERNAL_CLICK}
-                    analyticsProperties={{ section: 'work', label: orgName, url: orgLink }}
-                  >
-                    <div className="flex gap-2">
-                      {orgName}
-                      <Click style={{ width: '16px', height: '16px' }} aria-hidden="true" />
-                    </div>
-                  </Button>
-                ) : (
-                  <span className="text-secondary font-bold">{orgName}</span>
-                )}
-              </div>
-              <div className="flex items-center space-x-1">
-                <Clock />
-                <p className="font-bold">
-                  {start} - {end}
-                </p>
-              </div>
-              <p>{description}</p>
-            </div>
-          </div>
-        </div>
-      );
-    });
-  };
-
   return (
-    <section
-      id="work"
-      className="px-4 pt-12 pb-24 px-relative flex flex-col justify-center items-start space-y-8 md:px-8 md:items-left md:mx-auto"
-    >
-      <div className="text-left p-0">
-        <PortableText value={title} components={sectionHeadingPortableTextComponents} />
-      </div>
+    <section id="work" className="px-4 pb-24 md:px-8">
       <div className="max-w-4xl md:mx-auto">
-        <div className="w-full pt-10 px-0 relative overflow-hidden">{renderCollection()}</div>
+        <div className="mb-10">
+          <PortableText value={title} components={sectionHeadingPortableTextComponents} />
+        </div>
+
+        <ol className="ml-1 border-l border-rule">
+          {collection.map((item, index) => {
+            const { designation = '', description = '', link, cover, duration } = item ?? {};
+            const { name: orgName = '', href: orgLink = '' } = link ?? {};
+            const { start = '', end = '' } = duration ?? {};
+            const logo = cover ? urlForImage(cover)?.width(40).height(40).url() : undefined;
+
+            return (
+              <li key={item._key} className="relative pb-12 pl-8 last:pb-0">
+                {/* Rail marker; the current role is filled. */}
+                <span
+                  aria-hidden="true"
+                  className={`absolute -left-[5px] top-[0.55rem] h-[9px] w-[9px] rounded-full border ${
+                    index === 0 ? 'border-secondary bg-secondary' : 'border-muted bg-light'
+                  }`}
+                />
+
+                {start || end ? (
+                  <p className="text-sm tracking-wide text-muted">
+                    {start}
+                    {end ? ` – ${end}` : ''}
+                  </p>
+                ) : null}
+
+                <h3 className="mt-1 font-sans text-[1.125rem] font-semibold leading-snug">
+                  {designation}
+                  {orgName ? (
+                    <>
+                      <span className="font-normal text-muted"> at </span>
+                      <span className="inline-flex items-center gap-1.5 align-baseline">
+                        {logo ? (
+                          <img
+                            src={logo}
+                            alt=""
+                            className="h-5 w-5 self-center rounded-sm object-cover"
+                            loading="lazy"
+                          />
+                        ) : null}
+                        {orgLink ? (
+                          <Button
+                            href={orgLink}
+                            styles="text-secondary underline-offset-4 hover:underline rounded-sm"
+                            analyticsEvent={ANALYTICS_EVENTS.EXTERNAL_CLICK}
+                            analyticsProperties={{ section: 'work', label: orgName, url: orgLink }}
+                          >
+                            {orgName}
+                            <span className="sr-only"> (opens in a new tab)</span>
+                          </Button>
+                        ) : (
+                          orgName
+                        )}
+                      </span>
+                    </>
+                  ) : null}
+                </h3>
+
+                {description ? <p className="mt-3 max-w-2xl text-base text-primary/90">{description}</p> : null}
+              </li>
+            );
+          })}
+        </ol>
       </div>
     </section>
   );

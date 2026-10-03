@@ -191,20 +191,6 @@
   a.external-link.text-link:active {
     @apply text-primary;
   }
-  a.external-link.group {
-    @apply block;
-  }
-  a.external-link.group h3 {
-    transition: color 160ms ease-out;
-  }
-  a.external-link.group:hover h3,
-  a.external-link.group:active h3 {
-    @apply text-secondary;
-  }
-  a.external-link.group:hover .external-link-icon,
-  a.external-link.group:active .external-link-icon {
-    color: rgb(var(--color-icon-accent));
-  }
   a.external-link:focus-visible {
     outline: 2px solid rgb(var(--color-secondary));
     outline-offset: 3px;
@@ -339,7 +325,6 @@
 
   .btn,
   a.external-link,
-  a.external-link.group h3,
   a.external-link.icon-link,
   .external-link-icon {
     transition: none;

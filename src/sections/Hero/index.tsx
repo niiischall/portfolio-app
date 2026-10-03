@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { PortableText } from '@portabletext/react';
 
-import type { HeroSocialType } from '../../utils/helpers/types';
+import type { HeroSocialType, WritingsCollectionType } from '../../utils/helpers/types';
 import type { TypedObject } from 'sanity';
 import Button from '../../components/Button';
+import IndexSection from '../../components/IndexSection';
+import { toWritingItems } from '../Writings';
 import { getLinkProps } from '../../utils/helpers/link-props';
 import { heroPortableTextComponents } from '../../components/portableText/hero';
 import { ANALYTICS_EVENTS } from '../../utils/helpers/analytics';
@@ -31,9 +33,15 @@ export interface HeroProps {
   };
   /** Fallback target for a CTA that pointed at the removed /contact page. */
   footerEmail?: string;
+  writings?: WritingsCollectionType[];
 }
 
-const Hero: React.FC<HeroProps> = ({ data, footerEmail }) => {
+// The home page is an index: greeting, then the most recent writing. "Recent"
+// is the order authored in Studio — reorder there to change what shows.
+const RECENT_COUNT = 3;
+
+const Hero: React.FC<HeroProps> = ({ data, footerEmail, writings = [] }) => {
+  const recentWriting = useMemo(() => toWritingItems(writings).slice(0, RECENT_COUNT), [writings]);
   const { greeting } = data ?? {};
   const { link, text: greetingText = [] } = greeting ?? {};
   const { text: buttonText = '', slug } = link ?? {};
@@ -50,7 +58,7 @@ const Hero: React.FC<HeroProps> = ({ data, footerEmail }) => {
 
   return (
     <section
-      className="bg-light relative w-full md:mx-auto px-4 pt-4 pb-12 flex-1 md:px-8 md:pt-12 md:pb-48"
+      className="relative w-full md:mx-auto px-4 pt-10 pb-24 flex-1 md:px-8 md:pt-16"
       id="home"
     >
       <div className="max-w-4xl md:mx-auto">
@@ -88,6 +96,17 @@ const Hero: React.FC<HeroProps> = ({ data, footerEmail }) => {
             ) : null}
           </div>
         </div>
+        {recentWriting.length > 0 ? (
+          <div className="mt-16 md:mt-24">
+            <IndexSection
+              id="recent-writing"
+              label="writing"
+              items={recentWriting}
+              analyticsSection="home_writing"
+              allLink={{ to: '/writing', text: 'All writing' }}
+            />
+          </div>
+        ) : null}
       </div>
     </section>
   );

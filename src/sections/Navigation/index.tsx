@@ -164,7 +164,7 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
           <div className="flex flex-col items-center">
             <Button
               {...linkProps}
-              styles={`text-xl font-sans font-bold px-4 duration-200 text-primary hover:text-secondary ${
+              styles={`text-base font-sans px-3 duration-200 hover:text-secondary rounded-sm ${
                 isCurrentLocation ? 'text-secondary' : 'text-primary'
               }`}
               ariaCurrent={isCurrentLocation ? 'page' : undefined}
@@ -186,14 +186,15 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
   const profileImageUrl = cover?.asset?._ref ? urlForImage(cover)?.width(128).height(128).url() : undefined;
 
   return (
-    <header className="px-4 py-4 md:px-8 md:py-5 transition-colors duration-200">
+    <header className="px-4 py-3 md:px-8 md:py-4 transition-colors duration-200">
       <div className="max-w-4xl mx-auto w-full">
         <nav className="relative flex w-full items-center justify-between" aria-label="Main navigation">
-          <div className="shrink-0 w-14 h-14 md:w-20 md:h-20">
+          <div className="shrink-0 w-10 h-10 md:w-12 md:h-12">
             {profileImageUrl ? (
               <Button
                 to="/"
                 styles="block w-full h-full rounded-full"
+                ariaLabel="Nischal Nikit — home"
                 analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
                 analyticsProperties={{
                   surface: 'header',
@@ -201,7 +202,7 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
                   label: 'profile',
                 }}
               >
-                <img className="w-full h-full object-cover rounded-full" src={profileImageUrl} alt="Profile" />
+                <img className="w-full h-full object-cover rounded-full" src={profileImageUrl} alt="" />
               </Button>
             ) : null}
           </div>

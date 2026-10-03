@@ -67,7 +67,7 @@ const PortfolioLayout = () => {
       <Navigation data={data?.navigation} hero={data?.hero} />
       <main id="main-content" tabIndex={-1} className="flex-1 flex flex-col bg-light">
         <Routes>
-          <Route path="/" Component={() => <Hero data={data?.hero} footerEmail={data?.footer?.email} />} />
+          <Route path="/" Component={() => <Hero data={data?.hero} footerEmail={data?.footer?.email} writings={data?.writings?.collection} />} />
           {/* Work is a section of About now, not its own page. */}
           <Route
             path="/about"

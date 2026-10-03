@@ -35,7 +35,7 @@ const About: React.FC<AboutProps> = ({ data }) => {
 
   return (
     <section
-      className={`pt-12 px-4 pb-24 md:pb-36 md:px-8 ${pageEnter ? 'animate-page-enter' : ''}`}
+      className={`pt-12 px-4 pb-16 md:pb-20 md:px-8 ${pageEnter ? 'animate-page-enter' : ''}`}
       id="about"
     >
       <div className="max-w-4xl flex flex-col justify-center items-start space-y-12 space-x-0 md:mx-auto">
