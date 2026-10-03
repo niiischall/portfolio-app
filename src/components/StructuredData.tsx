@@ -60,7 +60,9 @@ const StructuredData = ({ email, writings = [] }: StructuredDataProps) => {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      // JSON.stringify escapes quotes and backslashes but not `<`, so CMS copy
+      // containing `</script>` would otherwise break out of this element.
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
     />
   );
 };

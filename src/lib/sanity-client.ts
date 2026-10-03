@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { combinedQuery } from "./sanity.queries";
 
 const fetchSanityData = async () => {
-  const response = await fetch(`/api/sanity?query=${combinedQuery}`);
+  // The query lives server-side in api/sanity.ts; sending one from here is
+  // what made the endpoint an open GROQ proxy.
+  const response = await fetch("/api/sanity");
   if (!response.ok) {
     throw new Error("Failed to fetch posts");
   }

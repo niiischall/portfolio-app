@@ -90,7 +90,9 @@ export const footerQuery = `*[_type == "footer"][0]{
   collection,
 }`;
 
-export const combinedQuery = encodeURIComponent(`{
+// Raw GROQ. Consumers are responsible for encoding (the API route uses
+// URLSearchParams, which encodes correctly). Never interpolate user input here.
+export const combinedQuery = `{
     "navigation": ${navigationQuery},
     "hero": ${heroQuery},
     "about": ${aboutQuery},
@@ -100,4 +102,4 @@ export const combinedQuery = encodeURIComponent(`{
     "talks": ${talksQuery},
     "contact": ${contactQuery},
     "footer": ${footerQuery}
-  }`);
+  }`;

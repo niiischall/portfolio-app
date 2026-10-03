@@ -170,8 +170,10 @@ const applyRouteMeta = (html, route, meta) => {
 };
 
 const fetchSanityData = async () => {
-  const { VITE_PROJECT_ID, VITE_API_VERSION, VITE_DATASET, VITE_API_TOKEN } = process.env;
-  if (!VITE_PROJECT_ID || !VITE_API_VERSION || !VITE_DATASET || !VITE_API_TOKEN) {
+  const { VITE_PROJECT_ID, VITE_API_VERSION, VITE_DATASET } = process.env;
+  // Transitional: falls back to the old name until the env var is renamed.
+  const token = process.env.SANITY_API_TOKEN ?? process.env.VITE_API_TOKEN;
+  if (!VITE_PROJECT_ID || !VITE_API_VERSION || !VITE_DATASET || !token) {
     console.warn('[prerender] Missing Sanity env vars - skipping static HTML injection.');
     return null;
   }
@@ -180,7 +182,7 @@ const fetchSanityData = async () => {
     COMBINED_QUERY,
   )}`;
   const response = await fetch(url, {
-    headers: { Authorization: `Bearer ${VITE_API_TOKEN}` },
+    headers: { Authorization: `Bearer ${token}` },
   });
 
   if (!response.ok) {
