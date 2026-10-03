@@ -49,7 +49,7 @@ const PortfolioLayout = () => {
           tabIndex={-1}
           className="flex-1 flex items-center justify-center px-4 text-center"
         >
-          <p className="font-ovo text-primary max-w-md">
+          <p className="font-sans text-primary max-w-md">
             Something went wrong while loading the site. Please refresh and try again.
           </p>
         </main>

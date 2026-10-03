@@ -174,7 +174,7 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
   const profileImageUrl = cover?.asset?._ref ? urlForImage(cover)?.width(128).height(128).url() : undefined;
 
   return (
-    <header className="px-4 py-8 md:px-8 md:py-12 bg-light transition-colors duration-200">
+    <header className="px-4 py-4 md:px-8 md:py-5 transition-colors duration-200">
       <div className="max-w-4xl mx-auto w-full">
         <nav className="relative flex w-full items-center justify-between" aria-label="Main navigation">
           <div className="shrink-0 w-14 h-14 md:w-20 md:h-20">

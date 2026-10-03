@@ -58,7 +58,7 @@ export interface FooterProps {
 }
 
 const FooterLabel: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <p className="text-xs font-sans font-bold uppercase tracking-widest text-primary opacity-60 mb-4">{children}</p>
+  <p className="label mb-4">{children}</p>
 );
 
 const Footer: React.FC<FooterProps> = ({ data, navigation, heroSocials }) => {
@@ -81,7 +81,7 @@ const Footer: React.FC<FooterProps> = ({ data, navigation, heroSocials }) => {
 
   return (
     <footer className="px-4 pb-12 pt-4 md:px-8 md:pb-16 bg-light" aria-label="Site footer">
-      <div className="max-w-4xl mx-auto border-t border-primary pt-10 md:pt-12">
+      <div className="max-w-4xl mx-auto border-t border-rule pt-10 md:pt-12">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-8 lg:gap-12">
           <div className="md:col-span-5">
             {footerSocials.length > 0 ? (
@@ -158,7 +158,7 @@ const Footer: React.FC<FooterProps> = ({ data, navigation, heroSocials }) => {
           ) : null}
         </div>
 
-        <div className="mt-10 pt-6 border-t border-gray flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-10 pt-6 border-t border-rule flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           {copyrightText ? <p className="text-sm font-sans text-primary opacity-70">{copyrightText}</p> : null}
           <Button
             onClick={scrollToTop}

@@ -19,11 +19,18 @@ const getPreferredTheme = (): Theme => {
 };
 
 const applyTheme = (theme: Theme) => {
-  document.documentElement.classList.toggle('dark', theme === 'dark');
-  document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')?.setAttribute(
-    'content',
-    theme === 'dark' ? '#23252a' : '#ba265c',
-  );
+  const root = document.documentElement;
+  root.classList.toggle('dark', theme === 'dark');
+
+  // Read the live token rather than hardcoding hex, so the address bar can
+  // never drift from the palette. (The previous values also used the accent
+  // for light and the background for dark, which was inconsistent.)
+  const background = getComputedStyle(root).getPropertyValue('--color-light').trim();
+  if (background) {
+    document
+      .querySelector<HTMLMetaElement>('meta[name="theme-color"]')
+      ?.setAttribute('content', `rgb(${background})`);
+  }
 };
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {

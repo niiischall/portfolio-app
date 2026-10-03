@@ -1,6 +1,5 @@
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 import { PortableText } from '@portabletext/react';
-import { useNavigate } from 'react-router-dom';
 
 import type { HeroSocialType } from '../../utils/helpers/types';
 import type { TypedObject } from 'sanity';
@@ -41,28 +40,6 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
   const ctaDestination = buttonSlug ? normalizePath(buttonSlug) : '';
   const showAboutCrossLink = ctaDestination !== '/about';
   const heroBtnStyles = 'btn lowercase !mt-0';
-  const navigate = useNavigate();
-  const [aboutBtnPressed, setAboutBtnPressed] = useState(false);
-
-  const handleMoreAboutClick = useCallback(
-    (event: React.MouseEvent<HTMLElement>) => {
-      event.preventDefault();
-      if (aboutBtnPressed) return;
-
-      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (reducedMotion) {
-        navigate('/about', { state: { pageEnter: true } });
-        return;
-      }
-
-      setAboutBtnPressed(true);
-      window.setTimeout(() => {
-        navigate('/about', { state: { pageEnter: true } });
-        setAboutBtnPressed(false);
-      }, 220);
-    },
-    [aboutBtnPressed, navigate],
-  );
 
   return (
     <section
@@ -90,8 +67,7 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
             {showAboutCrossLink ? (
               <Button
                 to="/about"
-                styles={`${heroBtnStyles} btn-press ${aboutBtnPressed ? 'is-pressed' : ''}`}
-                onClick={handleMoreAboutClick}
+                styles={heroBtnStyles}
                 analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
                 analyticsProperties={{
                   section: 'hero',
