@@ -42,7 +42,7 @@ const Work: React.FC<WorkProps> = ({ data }) => {
                 <span
                   aria-hidden="true"
                   className={`absolute -left-[5px] top-[0.55rem] h-[9px] w-[9px] rounded-full border ${
-                    index === 0 ? 'border-secondary bg-secondary' : 'border-muted bg-light'
+                    index === 0 ? 'border-primary bg-primary' : 'border-muted bg-light'
                   }`}
                 />
 
@@ -70,7 +70,7 @@ const Work: React.FC<WorkProps> = ({ data }) => {
                         {orgLink ? (
                           <Button
                             href={orgLink}
-                            styles="text-secondary underline-offset-4 hover:underline rounded-sm"
+                            styles="text-primary underline decoration-muted underline-offset-4 hover:decoration-current rounded-sm"
                             analyticsEvent={ANALYTICS_EVENTS.EXTERNAL_CLICK}
                             analyticsProperties={{ section: 'work', label: orgName, url: orgLink }}
                           >

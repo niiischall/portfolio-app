@@ -75,7 +75,7 @@ const IndexSection: React.FC<IndexSectionProps> = ({ id, items, analyticsSection
         {allLink ? (
           <Button
             to={allLink.to}
-            styles="font-sans text-sm text-secondary hover:underline underline-offset-4 rounded-sm"
+            styles="font-sans text-sm text-muted hover:text-primary hover:underline underline-offset-4 decoration-muted rounded-sm"
             analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
             analyticsProperties={{ surface: analyticsSection, destination: allLink.to, label: allLink.text }}
           >
