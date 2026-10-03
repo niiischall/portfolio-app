@@ -28,7 +28,7 @@ const COMBINED_QUERY = `{
   "hero": *[_type == "hero"][0]{ greeting{ text, link } },
   "about": *[_type == "about"][0]{ heading, overview, cv },
   "work": *[_type == "work"][0]{ heading, collection[]{ designation, description, link } },
-  "writings": *[_type == "writings"][0]{ heading, collection[]{ heading, body, link } }
+  "writings": *[_type == "writings"][0]{ heading, collection[]{ heading, body, link, publishedAt } }
 }`;
 
 const blocksToPlainText = (blocks) => {
@@ -79,7 +79,10 @@ const renderRouteSnapshot = (route, data) => {
     case '/writing':
       return `<h1>${escapeHtml(blocksToPlainText(data.writings?.heading?.title))}</h1>${listItems(
         data.writings?.collection,
-        (item) => `<strong>${escapeHtml(item.heading)}</strong> ${escapeHtml(item.body)}`,
+        (item) =>
+          `<strong>${escapeHtml(item.heading)}</strong> ${escapeHtml(item.body)}${
+            item.publishedAt ? ` <time datetime="${escapeHtml(item.publishedAt)}">${escapeHtml(item.publishedAt)}</time>` : ''
+          }`,
       )}`;
     default:
       return '';

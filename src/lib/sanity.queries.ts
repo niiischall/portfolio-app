@@ -72,7 +72,8 @@ export const writingsQuery = `*[_type == "writings"][0]{
     image,
     heading,
     body,
-    link
+    link,
+    publishedAt
   }
 }`;
 
