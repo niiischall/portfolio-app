@@ -29,7 +29,7 @@ export interface IndexSectionProps {
 const IndexRow: React.FC<{ item: IndexItem; analyticsSection: string }> = ({ item, analyticsSection }) => {
   const content = (
     <>
-      <span className="text-[1.0625rem] leading-snug text-primary transition-colors group-hover:text-secondary">
+      <span className="text-[1.0625rem] leading-snug text-primary decoration-muted underline-offset-4 group-hover:underline">
         {item.heading}
       </span>
       {item.meta ? (

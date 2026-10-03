@@ -13,8 +13,6 @@
     --color-secondary: 168 50 90; /* #A8325A   5.61:1 */
     --color-rule: 223 213 193; /* #DFD5C1  hairline */
     --color-gray: 230 221 202; /* #E6DDCA  skeleton fill */
-    --color-on-secondary: 246 239 224;
-    --color-icon-accent: 168 50 90;
   }
 
   .dark {
@@ -24,9 +22,6 @@
     --color-secondary: 224 154 174; /* #E09AAE   7.55:1 */
     --color-rule: 72 61 47; /* #483D2F */
     --color-gray: 55 46 35; /* #372E23 */
-    /* Must be the background, not cream: cream on the light rose is 1.8:1. */
-    --color-on-secondary: 34 28 21;
-    --color-icon-accent: 224 154 174;
   }
 
   @font-face {
@@ -134,12 +129,12 @@
       border-color 160ms ease-out,
       color 160ms ease-out;
   }
+  /* Hover is neutral: a firmer border and a faint tint, no colour change. */
   .btn:hover,
   .btn:active,
   .btn.is-pressed {
-    background-color: rgb(var(--color-secondary) / 0.08);
-    border-color: rgb(var(--color-secondary) / 0.45);
-    color: rgb(var(--color-secondary));
+    background-color: rgb(var(--color-primary) / 0.04);
+    border-color: rgb(var(--color-primary) / 0.35);
     transform: none;
     box-shadow: none;
   }
@@ -151,17 +146,9 @@
     font: inherit;
     color: inherit;
   }
+  /* Follows the surrounding text rather than the accent. */
   .external-link-icon {
-    color: rgb(var(--color-icon-accent));
-    transition: color 160ms ease-out;
-  }
-  .btn .external-link-icon {
-    color: rgb(var(--color-icon-accent));
-  }
-  .btn:hover .external-link-icon,
-  .btn:active .external-link-icon,
-  .btn.is-pressed .external-link-icon {
-    color: rgb(var(--color-on-secondary));
+    color: currentColor;
   }
   a.external-link {
     transition:

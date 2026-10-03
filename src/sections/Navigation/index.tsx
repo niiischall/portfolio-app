@@ -133,7 +133,7 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
         <li key={navItem._key}>
           <Button
             {...linkProps}
-            styles={`text-2xl font-sans font-bold px-4 text-primary hover:text-secondary duration-200 ${
+            styles={`text-2xl font-sans font-bold px-4 hover:underline underline-offset-4 decoration-muted ${
               isCurrentLocation ? 'text-secondary' : 'text-primary'
             }`}
             onClick={closeMobileMenu}
@@ -164,7 +164,7 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
           <div className="flex flex-col items-center">
             <Button
               {...linkProps}
-              styles={`text-base font-sans px-3 duration-200 hover:text-secondary rounded-sm ${
+              styles={`text-base font-sans px-3 hover:underline underline-offset-4 decoration-muted rounded-sm ${
                 isCurrentLocation ? 'text-secondary' : 'text-primary'
               }`}
               ariaCurrent={isCurrentLocation ? 'page' : undefined}
