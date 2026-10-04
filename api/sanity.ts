@@ -1,4 +1,8 @@
-import { combinedQuery } from '../src/lib/sanity.queries';
+// The explicit .js is required: package.json is "type": "module", so Vercel runs
+// this function as native ESM, and Node's ESM loader does not resolve
+// extensionless relative imports (ERR_MODULE_NOT_FOUND). Vercel compiles the
+// .ts source to the .js file this resolves to.
+import { combinedQuery } from '../src/lib/sanity.queries.js';
 
 // The site issues exactly one query, so the query is defined here rather than
 // accepted from the caller. This is deliberate: taking it from `req.query` made

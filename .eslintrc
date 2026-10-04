@@ -60,6 +60,14 @@
       "globals": {
         "fetch": "readonly"
       }
+    },
+    {
+      "files": [
+        "api/**/*.ts"
+      ],
+      "rules": {
+        "import/no-unresolved": "off"
+      }
     }
   ]
 }
