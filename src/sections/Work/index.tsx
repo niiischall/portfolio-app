@@ -37,12 +37,14 @@ const Work: React.FC<WorkProps> = ({ data }) => {
         </div>
 
         <ol className="ml-[7px] border-l border-rule">
-          {collection.map((item, index) => {
+          {collection.map((item) => {
             const { designation = '', description = '', meta = '', link, duration } = item ?? {};
             const { name: orgName = '', href: orgLink = '' } = link ?? {};
             const { start = '', end = '' } = duration ?? {};
             const highlights = toHighlights(description);
-            const isCurrent = index === 0;
+            // From the data, not the position: reordering entries in Studio
+            // shouldn't move the "current role" marker.
+            const isCurrent = /present|current/i.test(end);
 
             return (
               <li key={item._key} className="relative pb-14 pl-9 last:pb-0">

@@ -1,4 +1,5 @@
 import routesConfig from './routes.json';
+import { resolvePath } from '../utils/helpers/routes';
 
 export interface RouteMeta {
   title: string;
@@ -17,8 +18,11 @@ export const STUDIO_META: RouteMeta = {
 };
 
 export const getRouteMeta = (pathname: string): RouteMeta => {
-  const path = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
-  if (path.startsWith('/studio')) return STUDIO_META;
+  if (pathname.startsWith('/studio')) return STUDIO_META;
+  // resolvePath strips the trailing slash and follows redirects, so /writings
+  // reports /writing's meta during its client-side redirect instead of
+  // flashing the 404 title and noindex.
+  const path = resolvePath(pathname);
   // Previously fell back to the home entry, so any unknown URL served the home
   // page's title and a self-referential canonical: a soft 404.
   return ROUTE_META[path] ?? NOT_FOUND_META;

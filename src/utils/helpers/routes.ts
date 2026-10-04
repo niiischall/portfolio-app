@@ -17,6 +17,9 @@ export const isExternalUrl = (url: string): boolean =>
 
 const REDIRECTS: Record<string, string> = routesConfig.redirects;
 
+export const stripTrailingSlash = (path: string) =>
+  path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path;
+
 /**
  * normalizePath, then follow renamed routes (e.g. /writings -> /writing).
  * Nav and CTA slugs live in Sanity, so this keeps links correct whether or not
@@ -25,14 +28,12 @@ const REDIRECTS: Record<string, string> = routesConfig.redirects;
 export const resolvePath = (slug: string | undefined): string => {
   const path = normalizePath(slug);
   if (isExternalUrl(path)) return path;
-  const clean = path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path;
+  const clean = stripTrailingSlash(path);
   return REDIRECTS[clean] ?? clean;
 };
 
 /** True for routes the site actually serves. Removed sections return false. */
 export const isLiveRoute = (path: string): boolean => path in routesConfig.routes;
-
-const stripTrailingSlash = (path: string) => (path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path);
 
 /** True for an old URL that only exists to redirect (e.g. /writings). */
 export const isRedirectSource = (path: string): boolean => stripTrailingSlash(path) in REDIRECTS;

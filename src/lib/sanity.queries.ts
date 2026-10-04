@@ -44,28 +44,6 @@ export const workQuery = `*[_type == "work"][0]{
   }
 }`;
 
-export const experimentsQuery = `*[_type == "experiments"][0]{
-  heading,
-  collection[]{
-    _key,
-    heading,
-    body,
-    image,
-    link,
-  }
-}`;
-
-export const talksQuery = `*[_type == "talks"][0]{
-  heading,
-  collection[]{
-    _key,
-    heading,
-    body,
-    link,
-    cover
-  }
-}`;
-
 export const writingsQuery = `*[_type == "writings"][0]{
   heading,
   collection[]{
@@ -76,12 +54,6 @@ export const writingsQuery = `*[_type == "writings"][0]{
     link,
     publishedAt
   }
-}`;
-
-export const contactQuery = `*[_type == "contact"][0]{
-  heading,
-  text,
-  link,  
 }`;
 
 export const footerQuery = `*[_type == "footer"][0]{
@@ -99,9 +71,6 @@ export const combinedQuery = `{
     "hero": ${heroQuery},
     "about": ${aboutQuery},
     "work": ${workQuery},
-    "experiments": ${experimentsQuery},
     "writings": ${writingsQuery},
-    "talks": ${talksQuery},
-    "contact": ${contactQuery},
     "footer": ${footerQuery}
   }`;

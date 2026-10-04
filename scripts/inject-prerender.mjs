@@ -173,6 +173,35 @@ const writeRouteHtml = (baseHtml, route, snapshot) => {
   fs.writeFileSync(path.join(outDir, 'index.html'), html);
 };
 
+// Unknown paths must get a real 404 status, not the home page's HTML with a
+// 200. vercel.json therefore rewrites only known routes to the SPA; anything
+// else falls through to this file, which Vercel serves with status 404. The
+// app still boots on it and renders the NotFound route.
+const write404 = (baseHtml) => {
+  const meta = ROUTES_CONFIG.notFound;
+  let html = applyRouteMeta(baseHtml, '/', meta);
+  html = html.replace(/<link rel="canonical"[^>]*>\s*/, '');
+  html = html.replace('</head>', '  <meta name="robots" content="noindex, nofollow" />\n</head>');
+  html = html.replace(
+    '<div id="root"></div>',
+    '<div id="ssg-fallback" aria-hidden="true" class="ssg-fallback"><h1>page not found</h1></div>\n  <div id="root"></div>',
+  );
+  fs.writeFileSync(path.join(distDir, '404.html'), html);
+  console.log('[prerender] Wrote 404.html');
+};
+
+// With no catch-all rewrite, a route missing from vercel.json would 404 in
+// production whenever its prerendered HTML isn't produced (e.g. Sanity was
+// unreachable at build time). Fail the build instead of shipping that.
+const assertRewritesCoverRoutes = () => {
+  const vercel = JSON.parse(fs.readFileSync(path.join(rootDir, 'vercel.json'), 'utf8'));
+  const sources = new Set((vercel.rewrites ?? []).map((rewrite) => rewrite.source));
+  const missing = PORTFOLIO_ROUTES.filter((route) => route !== '/' && !sources.has(route));
+  if (missing.length) {
+    throw new Error(`vercel.json has no SPA rewrite for route(s): ${missing.join(', ')}`);
+  }
+};
+
 const main = async () => {
   const baseHtmlPath = path.join(distDir, 'index.html');
   if (!fs.existsSync(baseHtmlPath)) {
@@ -180,9 +209,11 @@ const main = async () => {
     process.exit(1);
   }
 
+  assertRewritesCoverRoutes();
   writeSitemap();
 
   const baseHtml = fs.readFileSync(baseHtmlPath, 'utf8');
+  write404(baseHtml);
   const data = await fetchSanityData();
 
   if (!data) {

@@ -42,7 +42,7 @@ const PortfolioLayout = () => {
     return (
       <>
         <PageMeta meta={routeMeta} pathname={pathname} />
-        <div className="min-h-screen flex flex-col bg-light">
+        <div className="min-h-screen flex flex-col">
         <main
           id="main-content"
           tabIndex={-1}
@@ -66,7 +66,7 @@ const PortfolioLayout = () => {
         pathname={pathname}
       />
       <Navigation data={data?.navigation} socials={resolveSocials(data?.footer?.socials, data?.hero?.socials)} />
-      <main id="main-content" tabIndex={-1} className="flex-1 flex flex-col bg-light">
+      <main id="main-content" tabIndex={-1} className="flex-1 flex flex-col">
         <Routes>
           <Route path="/" Component={() => <Hero data={data?.hero} writings={data?.writings?.collection} />} />
           {/* Work is a section of About now, not its own page. */}

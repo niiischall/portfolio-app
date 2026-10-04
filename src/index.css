@@ -59,8 +59,10 @@
       background-color 200ms ease,
       color 200ms ease;
   }
+  /* No background here: html already paints the page colour, and an opaque
+     body background paints over the z-index:-1 paper grain, hiding it. */
   body {
-    @apply bg-light text-primary;
+    @apply text-primary;
     transition:
       background-color 200ms ease,
       color 200ms ease;
