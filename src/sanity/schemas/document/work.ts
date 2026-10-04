@@ -99,9 +99,19 @@ export default defineType({
             }),
             defineField({
               type: 'string',
+              name: 'meta',
+              title: 'Team & location',
+              description: 'Optional line under the role, e.g. "Health & Life Insurance · Bangalore, India".',
+            }),
+            defineField({
+              // `text` rather than `string`: a string input is single-line, so
+              // bullets (one per line) couldn't be entered. Same stored type,
+              // so existing entries need no migration.
+              type: 'text' as const,
+              rows: 5,
               name: 'description',
-              title: 'Description',
-              description: 'Used for describing the experience.',
+              title: 'Highlights',
+              description: 'One highlight per line — each line becomes a bullet. A single line renders as a paragraph.',
               validation: (rule) => rule.max(1000).required(),
             }),
             defineField({

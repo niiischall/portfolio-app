@@ -62,16 +62,15 @@ One process serves both the site and the CMS. In dev, Sanity content is proxied 
 
 ## Routes
 
-| Path           | Content                          |
-| -------------- | -------------------------------- |
-| `/`            | Hero and CTAs                    |
-| `/about`       | About page                       |
-| `/work`        | Work experience                  |
-| `/experiments` | Side projects                    |
-| `/writings`    | Blog highlights (links external) |
-| `/talks`       | Talks and presentations          |
-| `/contact`     | Contact info and CTA             |
-| `/studio`      | Sanity Studio (CMS)              |
+| Path       | Content                                             |
+| ---------- | --------------------------------------------------- |
+| `/`        | Hero and recent writing                             |
+| `/about`   | About, plus the work timeline                       |
+| `/writing` | Writing index (posts link out to the blog)          |
+| `/studio`  | Sanity Studio (CMS)                                 |
+
+Routes, titles, redirects and the sitemap all come from `src/config/routes.json`.
+`/writings` and `/work` redirect to their new homes; anything else is a 404.
 
 ## Project structure
 

@@ -4,117 +4,164 @@
 
 @layer base {
   :root {
-    --color-primary: 52 55 60;
-    --color-secondary: 186 38 92;
-    --color-light: 238 234 227;
-    --color-gray: 228 228 228;
-    --color-shadow: 52 55 60;
-    --color-on-secondary: 238 234 227;
-    --color-icon-accent: 186 38 92;
+    /* Warm sepia paper. Contrast measured against --color-light in each theme;
+       see the plan for ratios. Muted is deliberately darker than the reference
+       site's label colour, which fails AA at 3.53:1. */
+    --color-light: 246 239 224; /* #F6EFE0 */
+    --color-primary: 42 34 26; /* #2A221A  13.67:1 */
+    --color-muted: 116 101 82; /* #746552   4.92:1 */
+    --color-secondary: 168 50 90; /* #A8325A   5.61:1 */
+    --color-rule: 223 213 193; /* #DFD5C1  hairline */
+    --color-gray: 230 221 202; /* #E6DDCA  skeleton fill */
   }
 
   .dark {
-    --color-primary: 238 234 227;
-    --color-secondary: 214 96 140;
-    --color-light: 35 37 42;
-    --color-gray: 60 63 70;
-    --color-shadow: 20 22 26;
-    --color-on-secondary: 238 234 227;
-    --color-icon-accent: 214 96 140;
+    --color-light: 34 28 21; /* #221C15  warm espresso, not charcoal */
+    --color-primary: 238 230 214; /* #EEE6D6  13.60:1 */
+    --color-muted: 158 143 121; /* #9E8F79   5.35:1 */
+    --color-secondary: 224 154 174; /* #E09AAE   7.55:1 */
+    --color-rule: 72 61 47; /* #483D2F */
+    --color-gray: 55 46 35; /* #372E23 */
   }
 
   @font-face {
-    font-family: Ovo;
+    font-family: Newsreader;
+    font-style: normal;
+    font-weight: 200 700;
+    src: url('/fonts/Newsreader-Variable-latin.woff2') format('woff2');
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'IBM Plex Sans';
+    font-style: normal;
     font-weight: 400;
-    src: url('/fonts/Ovo-Regular.woff2') format('woff2');
+    src: url('/fonts/IBMPlexSans-400-latin.woff2') format('woff2');
+    font-display: swap;
+  }
+
+  /* Declared as a range so font-weight: 700 picks this face instead of
+     synthesising a fake bold from the 400. */
+  @font-face {
+    font-family: 'IBM Plex Sans';
+    font-style: normal;
+    font-weight: 500 700;
+    src: url('/fonts/IBMPlexSans-600-latin.woff2') format('woff2');
     font-display: swap;
   }
 }
 
 @layer components {
   html {
-    @apply scroll-smooth scroll-pt-2 bg-light text-primary;
+    @apply scroll-smooth bg-light text-primary;
+    scroll-padding-top: 5.5rem;
     transition:
       background-color 200ms ease,
       color 200ms ease;
   }
+  /* No background here: html already paints the page colour, and an opaque
+     body background paints over the z-index:-1 paper grain, hiding it. */
   body {
-    @apply bg-light text-primary;
+    @apply text-primary;
     transition:
       background-color 200ms ease,
       color 200ms ease;
+  }
+  /* Paper grain. Fixed + behind content so it neither tiles visibly on scroll
+     nor fights the background-color transition. Token-driven, so it flips with
+     the theme for free. Static, so reduced-motion needs nothing. */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      radial-gradient(rgb(var(--color-primary) / 0.035) 1px, transparent 1px),
+      radial-gradient(rgb(var(--color-primary) / 0.025) 1px, transparent 1px);
+    background-size:
+      22px 22px,
+      37px 37px;
+    background-position:
+      0 0,
+      11px 18px;
   }
   header {
-    @apply bg-light;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background-color: rgb(var(--color-light) / 0.8);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgb(var(--color-rule) / 0.6);
+  }
+  @supports not (backdrop-filter: blur(1px)) {
+    header {
+      background-color: rgb(var(--color-light));
+    }
   }
   h1 {
-    @apply text-6xl font-ovo font-bold text-left;
+    @apply font-serif font-extralight text-left text-[2.75rem] leading-[1.12] tracking-[-0.01em] md:text-[3.75rem];
   }
   h2 {
-    @apply text-4xl font-ovo font-bold text-left;
+    @apply font-serif font-extralight text-left text-[2rem] leading-[1.2] md:text-[2.5rem];
   }
   h3 {
-    @apply text-xl font-ovo font-bold text-left;
+    @apply font-serif font-normal text-left text-[1.35rem] leading-[1.35];
   }
   p {
-    @apply text-base font-ovo;
+    @apply font-sans text-[1.125rem] leading-[1.7];
   }
+  /* Previously forced to the display face at a fixed size, which overrode
+     whatever the surrounding element set. */
   span {
-    @apply text-base font-ovo;
+    font: inherit;
+  }
+  /* About intro: serif prose with a drop cap on the opening paragraph.
+     The global p rule sets sans/size, so the prose resets both. */
+  .about-prose p {
+    font: inherit;
+    margin-bottom: 1.25em;
+  }
+  .about-prose p:first-of-type::first-letter {
+    float: left;
+    font-family: Newsreader, Georgia, serif;
+    font-weight: 200;
+    font-size: 4.2em;
+    line-height: 0.8;
+    margin: 0.07em 0.12em 0 0;
+    color: rgb(var(--color-muted));
+  }
+  /* Tracked uppercase section label. Footer hand-rolled this; it now shares. */
+  .label {
+    @apply font-sans text-xs font-bold uppercase tracking-[0.12em] text-muted;
   }
   .btn {
-    @apply inline-block relative mt-4 cursor-pointer text-base border-[3px] px-3 py-2.5 border-solid border-primary font-sans text-primary lowercase tracking-wide;
-    box-shadow:
-      1px 1px 0 0 rgb(var(--color-shadow)),
-      2px 2px 0 0 rgb(var(--color-shadow)),
-      3px 3px 0 0 rgb(var(--color-shadow)),
-      4px 4px 0 0 rgb(var(--color-shadow)),
-      5px 5px 0 0 rgb(var(--color-shadow));
+    @apply inline-flex items-center gap-1.5 mt-4 cursor-pointer rounded-sm border border-solid px-4 py-2
+      font-sans text-[0.95rem] font-medium lowercase tracking-[0.02em] text-primary;
+    border-color: rgb(var(--color-rule));
+    box-shadow: none;
     transition:
-      transform 160ms ease-out,
-      box-shadow 160ms ease-out,
       background-color 160ms ease-out,
-      color 160ms ease-out,
-      border-color 160ms ease-out;
+      border-color 160ms ease-out,
+      color 160ms ease-out;
   }
-  .btn:hover {
-    @apply bg-secondary text-light border-primary;
-    transform: translate(-2px, -2px);
-    box-shadow:
-      1px 1px 0 0 rgb(var(--color-shadow)),
-      2px 2px 0 0 rgb(var(--color-shadow)),
-      3px 3px 0 0 rgb(var(--color-shadow)),
-      4px 4px 0 0 rgb(var(--color-shadow)),
-      5px 5px 0 0 rgb(var(--color-shadow)),
-      6px 6px 0 0 rgb(var(--color-shadow)),
-      7px 7px 0 0 rgb(var(--color-shadow));
-  }
+  /* Hover is neutral: a firmer border and a faint tint, no colour change. */
+  .btn:hover,
   .btn:active,
   .btn.is-pressed {
-    @apply bg-secondary text-light border-primary;
-    transform: translate(3px, 3px);
-    box-shadow: 1px 1px 0 0 rgb(var(--color-shadow));
+    background-color: rgb(var(--color-primary) / 0.04);
+    border-color: rgb(var(--color-primary) / 0.35);
+    transform: none;
+    box-shadow: none;
   }
   .btn:focus-visible {
     outline: 2px solid rgb(var(--color-secondary));
     outline-offset: 3px;
   }
   .btn span {
-    @apply font-sans tracking-wide;
+    font: inherit;
     color: inherit;
-    font-size: inherit;
-  }
-  .external-link-icon {
-    color: rgb(var(--color-icon-accent));
-    transition: color 160ms ease-out;
-  }
-  .btn .external-link-icon {
-    color: rgb(var(--color-icon-accent));
-  }
-  .btn:hover .external-link-icon,
-  .btn:active .external-link-icon,
-  .btn.is-pressed .external-link-icon {
-    color: rgb(var(--color-on-secondary));
   }
   a.external-link {
     transition:
@@ -144,41 +191,18 @@
   a.external-link.text-link:active {
     @apply text-primary;
   }
-  a.external-link.group {
-    @apply block;
-  }
-  a.external-link.group h3 {
-    transition: color 160ms ease-out;
-  }
-  a.external-link.group:hover h3,
-  a.external-link.group:active h3 {
-    @apply text-secondary;
-  }
-  a.external-link.group:hover .external-link-icon,
-  a.external-link.group:active .external-link-icon {
-    color: rgb(var(--color-icon-accent));
-  }
   a.external-link:focus-visible {
     outline: 2px solid rgb(var(--color-secondary));
     outline-offset: 3px;
   }
-  .btn-press {
-    transition:
-      transform 160ms ease-out,
-      box-shadow 160ms ease-out,
-      background-color 160ms ease-out,
-      color 160ms ease-out;
-  }
-  .btn-press.is-pressed,
-  .btn-press:active {
-    transform: translate(3px, 3px);
-    box-shadow: 1px 1px 0 0 rgb(var(--color-shadow));
-  }
-  .divider {
-    @apply w-[25%] h-[1px] mx-auto bg-primary;
-  }
   .header-icon-btn {
     @apply flex h-11 w-11 shrink-0 items-center justify-center focus:outline-none;
+  }
+  /* focus:outline-none above removes the ring for every consumer; ThemeToggle
+     adds its own, the hamburger did not. Restore it for keyboard users. */
+  .header-icon-btn:focus-visible {
+    outline: 2px solid rgb(var(--color-secondary));
+    outline-offset: 2px;
   }
 }
 
@@ -205,7 +229,7 @@
   left: 0;
   width: 24px;
   height: 2px;
-  background-color: rgb(var(--color-secondary));
+  background-color: rgb(var(--color-primary));
   transform-origin: center;
   transition:
     transform 0.25s ease,
@@ -272,8 +296,8 @@
   font-size: 0.875rem;
   line-height: 1.25rem;
   box-shadow:
-    rgba(15, 15, 15, 0.1) 0px 0px 0px 1px,
-    rgba(15, 15, 15, 0.1) 0px 2px 4px;
+    rgb(var(--color-primary) / 0.1) 0px 0px 0px 1px,
+    rgb(var(--color-primary) / 0.1) 0px 2px 4px;
   outline: 2px solid rgb(var(--color-secondary));
   outline-offset: 2px;
 }
@@ -300,29 +324,16 @@
   }
 
   .btn,
-  .btn-press,
   a.external-link,
-  a.external-link.group h3,
-  a.external-link.icon-link,
-  .external-link-icon {
+  a.external-link.icon-link {
     transition: none;
   }
 
-  .btn:hover {
-    transform: none;
-  }
-
-  .btn-press.is-pressed,
-  .btn-press:active,
+  .btn:hover,
   .btn:active,
   .btn.is-pressed {
     transform: none;
-    box-shadow:
-      1px 1px 0 0 rgb(var(--color-shadow)),
-      2px 2px 0 0 rgb(var(--color-shadow)),
-      3px 3px 0 0 rgb(var(--color-shadow)),
-      4px 4px 0 0 rgb(var(--color-shadow)),
-      5px 5px 0 0 rgb(var(--color-shadow));
+    box-shadow: none;
   }
 
   .hamburger-top,

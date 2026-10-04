@@ -2,6 +2,8 @@ import { defineConfig, loadEnv } from 'vite';
 import dotenv from 'dotenv';
 import react from '@vitejs/plugin-react';
 
+import { combinedQuery } from './src/lib/sanity.queries';
+
 // Load environment variables from .env
 dotenv.config();
 
@@ -25,6 +27,11 @@ export default defineConfig(({ mode }) => {
     build: {
       rollupOptions: {
         output: {
+          // Allowlist only. A previous `id.includes('sanity')` rule put the tiny
+          // @sanity/image-url builder in the same chunk as all of Sanity Studio,
+          // and sanity.image.ts is imported by Navigation/Footer/Work — so every
+          // public route pulled ~4.9 MB of Studio. Unmatched modules are now left
+          // to Rollup, which keeps Studio-only code behind the lazy /studio import.
           manualChunks(id) {
             if (!id.includes('node_modules')) return;
 
@@ -36,16 +43,7 @@ export default defineConfig(({ mode }) => {
               return 'query-vendor';
             }
 
-            if (id.includes('sanity') || id.includes('@sanity/')) {
-              return 'sanity-vendor';
-            }
-
-            if (
-              id.includes('/react/') ||
-              id.includes('react-dom') ||
-              id.includes('react-router') ||
-              id.includes('scheduler')
-            ) {
+            if (/node_modules\/(react-router-dom|react-router|react-dom|scheduler|react)\//.test(id)) {
               return 'react-vendor';
             }
           },
@@ -63,10 +61,13 @@ export default defineConfig(({ mode }) => {
         '/api/sanity': {
           target: `https://${process.env.VITE_PROJECT_ID}.api.sanity.io/${process.env.VITE_API_VERSION}/data/query/${process.env.VITE_DATASET}`,
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api\/sanity/, ''),
+          // Mirrors api/sanity.ts: the query is defined here, never taken from
+          // the caller, so dev and production behave identically.
+          rewrite: () => `?query=${encodeURIComponent(combinedQuery)}`,
           configure: (proxy) => {
             proxy.on('proxyReq', (proxyReq) => {
-              proxyReq.setHeader('Authorization', `Bearer ${process.env.VITE_API_TOKEN}`);
+              const token = process.env.SANITY_API_TOKEN ?? process.env.VITE_API_TOKEN;
+              proxyReq.setHeader('Authorization', `Bearer ${token}`);
             });
           },
         },

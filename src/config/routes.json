@@ -1,0 +1,30 @@
+{
+  "routes": {
+    "/": {
+      "title": "Nischal Nikit — Product Engineer, Bangalore",
+      "description": "hey 👋, i'm nischal nikit. i build things that live on the web. i also talk & write about some of those things. this is my corner of the internet.",
+      "changefreq": "monthly",
+      "priority": "1.0"
+    },
+    "/about": {
+      "title": "about · Nischal Nikit",
+      "description": "About Nischal Nikit — background, what he works on, and his timeline of roles building products for the web.",
+      "changefreq": "monthly",
+      "priority": "0.9"
+    },
+    "/writing": {
+      "title": "writing · Nischal Nikit",
+      "description": "Essays and technical writing by Nischal Nikit on React, full-stack development, and building for the web.",
+      "changefreq": "weekly",
+      "priority": "0.8"
+    }
+  },
+  "redirects": {
+    "/writings": "/writing",
+    "/work": "/about"
+  },
+  "notFound": {
+    "title": "not found · Nischal Nikit",
+    "description": "This page doesn't exist."
+  }
+}

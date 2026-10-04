@@ -91,6 +91,8 @@ export interface WorkCollectionType {
   };
   description: string;
   designation: string;
+  /** Optional "team · location" line. */
+  meta?: string;
   duration: {
     _type: string;
     start: string;
@@ -162,6 +164,8 @@ export type WritingsCollectionType = {
   body: string;
   link: string;
   image: Image;
+  /** Optional ISO date (YYYY-MM-DD) set in Studio. */
+  publishedAt?: string;
 };
 
 export interface WritingsContextType {

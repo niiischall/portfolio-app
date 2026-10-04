@@ -16,40 +16,11 @@ const distDir = path.join(rootDir, 'dist');
 
 const SITE_URL = (process.env.VITE_SITE_URL || 'https://www.nischalnikit.xyz').replace(/\/$/, '');
 
-const ROUTE_META = {
-  '/': {
-    title: 'hey! i am nischal! 👋',
-    description:
-      "hey 👋, i'm nischal nikit. i build things that live on the web. i also talk & write about some of those things. this is my corner of the internet.",
-  },
-  '/about': {
-    title: 'about · Nischal Nikit',
-    description:
-      'Learn about Nischal Nikit - background, interests, and what he is working on in software and the web.',
-  },
-  '/work': {
-    title: 'work · Nischal Nikit',
-    description: 'Work experience and roles at companies where Nischal Nikit has built products on the web.',
-  },
-  '/experiments': {
-    title: 'experiments · Nischal Nikit',
-    description:
-      'Side projects and experiments by Nischal Nikit - prototypes, tools, and ideas explored outside day-to-day work.',
-  },
-  '/writings': {
-    title: 'blogs · Nischal Nikit',
-    description:
-      'Essays and technical writing by Nischal Nikit on React, full-stack development, and building for the web.',
-  },
-  '/talks': {
-    title: 'talks · Nischal Nikit',
-    description: 'Conference talks and presentations by Nischal Nikit on software engineering and web development.',
-  },
-  '/contact': {
-    title: 'contact · Nischal Nikit',
-    description: 'Get in touch with Nischal Nikit for collaboration, speaking, or general inquiries.',
-  },
-};
+// Single source of truth, shared with src/config/route-meta.ts. This used to be
+// a hand-copied table, and drift between the two was invisible: a wrong title
+// here means a wrong <title> and canonical in the crawlable HTML, with no error.
+const ROUTES_CONFIG = JSON.parse(fs.readFileSync(path.join(rootDir, 'src/config/routes.json'), 'utf8'));
+const ROUTE_META = ROUTES_CONFIG.routes;
 
 const PORTFOLIO_ROUTES = Object.keys(ROUTE_META);
 
@@ -57,10 +28,7 @@ const COMBINED_QUERY = `{
   "hero": *[_type == "hero"][0]{ greeting{ text, link } },
   "about": *[_type == "about"][0]{ heading, overview, cv },
   "work": *[_type == "work"][0]{ heading, collection[]{ designation, description, link } },
-  "experiments": *[_type == "experiments"][0]{ heading, collection[]{ heading, body } },
-  "writings": *[_type == "writings"][0]{ heading, collection[]{ heading, body, link } },
-  "talks": *[_type == "talks"][0]{ heading, collection[]{ heading, body } },
-  "contact": *[_type == "contact"][0]{ heading, text, link }
+  "writings": *[_type == "writings"][0]{ heading, collection[]{ heading, body, link, publishedAt } }
 }`;
 
 const blocksToPlainText = (blocks) => {
@@ -71,19 +39,17 @@ const blocksToPlainText = (blocks) => {
     .trim();
 };
 
-const renderBlocksHtml = (blocks) => {
+// Mirrors the Hero component: heading blocks join into one <h1>, the rest
+// becomes the intro paragraph. Keeps the crawlable home page's heading
+// structure identical to what the browser renders.
+const renderGreetingHtml = (blocks) => {
   if (!Array.isArray(blocks)) return '';
-  return blocks
-    .map((block) => {
-      const text = Array.isArray(block?.children)
-        ? block.children.map((child) => child?.text ?? '').join('')
-        : '';
-      if (!text) return '';
-      const style = block?.style || 'normal';
-      const tag = style === 'h1' || style === 'h2' ? 'h1' : style === 'h3' ? 'h2' : 'p';
-      return `<${tag}>${escapeHtml(text)}</${tag}>`;
-    })
-    .join('');
+  const text = (block) =>
+    (Array.isArray(block?.children) ? block.children.map((child) => child?.text ?? '').join('') : '').trim();
+  const isHeading = (block) => String(block?.style ?? '').startsWith('h');
+  const headline = blocks.filter(isHeading).map(text).filter(Boolean).join(' ');
+  const intro = blocks.filter((block) => !isHeading(block)).map(text).filter(Boolean).join(' ');
+  return `${headline ? `<h1>${escapeHtml(headline)}</h1>` : ''}${intro ? `<p>${escapeHtml(intro)}</p>` : ''}`;
 };
 
 const escapeHtml = (value) =>
@@ -99,42 +65,39 @@ const listItems = (items, renderItem) =>
 const renderRouteSnapshot = (route, data) => {
   switch (route) {
     case '/':
-      return `<main id="main-content">${renderBlocksHtml(data.hero?.greeting?.text)}</main>`;
+      return renderGreetingHtml(data.hero?.greeting?.text);
     case '/about':
-      return `<main id="main-content"><h1>${escapeHtml(
-        blocksToPlainText(data.about?.heading?.title),
-      )}</h1><p>${escapeHtml(blocksToPlainText(data.about?.overview))}</p></main>`;
-    case '/work':
-      return `<main id="main-content"><h1>${escapeHtml(blocksToPlainText(data.work?.heading?.title))}</h1>${listItems(
+      // About absorbed the work timeline; keep that copy crawlable here.
+      return `<h1>${escapeHtml(blocksToPlainText(data.about?.heading?.title))}</h1><p>${escapeHtml(
+        blocksToPlainText(data.about?.overview),
+      )}</p><h2>${escapeHtml(blocksToPlainText(data.work?.heading?.title))}</h2>${listItems(
         data.work?.collection,
         (item) => `<strong>${escapeHtml(item.designation)}</strong> ${escapeHtml(item.description)}`,
-      )}</main>`;
-    case '/experiments':
-      return `<main id="main-content"><h1>${escapeHtml(
-        blocksToPlainText(data.experiments?.heading?.title),
-      )}</h1>${listItems(
-        data.experiments?.collection,
-        (item) => `<strong>${escapeHtml(item.heading)}</strong> ${escapeHtml(item.body)}`,
-      )}</main>`;
-    case '/writings':
-      return `<main id="main-content"><h1>${escapeHtml(
-        blocksToPlainText(data.writings?.heading?.title),
-      )}</h1>${listItems(
+      )}`;
+    case '/writing':
+      return `<h1>${escapeHtml(blocksToPlainText(data.writings?.heading?.title))}</h1>${listItems(
         data.writings?.collection,
-        (item) => `<strong>${escapeHtml(item.heading)}</strong> ${escapeHtml(item.body)}`,
-      )}</main>`;
-    case '/talks':
-      return `<main id="main-content"><h1>${escapeHtml(blocksToPlainText(data.talks?.heading?.title))}</h1>${listItems(
-        data.talks?.collection,
-        (item) => `<strong>${escapeHtml(item.heading)}</strong> ${escapeHtml(item.body)}`,
-      )}</main>`;
-    case '/contact':
-      return `<main id="main-content"><h1>${escapeHtml(
-        blocksToPlainText(data.contact?.heading?.title),
-      )}</h1><p>${escapeHtml(blocksToPlainText(data.contact?.text))}</p></main>`;
+        (item) =>
+          `<strong>${escapeHtml(item.heading)}</strong> ${escapeHtml(item.body)}${
+            item.publishedAt ? ` <time datetime="${escapeHtml(item.publishedAt)}">${escapeHtml(item.publishedAt)}</time>` : ''
+          }`,
+      )}`;
     default:
-      return '<main id="main-content"></main>';
+      return '';
   }
+};
+
+// Generated from the route table so the sitemap can never list a removed or
+// redirected URL (which would tell crawlers to fetch redirects).
+const writeSitemap = () => {
+  const urls = PORTFOLIO_ROUTES.map((route) => {
+    const { changefreq, priority } = ROUTE_META[route];
+    const loc = route === '/' ? `${SITE_URL}/` : `${SITE_URL}${route}`;
+    return `  <url>\n    <loc>${loc}</loc>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`;
+  }).join('\n');
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+  fs.writeFileSync(path.join(distDir, 'sitemap.xml'), xml);
+  console.log(`[prerender] Wrote sitemap.xml (${PORTFOLIO_ROUTES.length} URLs)`);
 };
 
 const applyRouteMeta = (html, route, meta) => {
@@ -170,8 +133,10 @@ const applyRouteMeta = (html, route, meta) => {
 };
 
 const fetchSanityData = async () => {
-  const { VITE_PROJECT_ID, VITE_API_VERSION, VITE_DATASET, VITE_API_TOKEN } = process.env;
-  if (!VITE_PROJECT_ID || !VITE_API_VERSION || !VITE_DATASET || !VITE_API_TOKEN) {
+  const { VITE_PROJECT_ID, VITE_API_VERSION, VITE_DATASET } = process.env;
+  // Transitional: falls back to the old name until the env var is renamed.
+  const token = process.env.SANITY_API_TOKEN ?? process.env.VITE_API_TOKEN;
+  if (!VITE_PROJECT_ID || !VITE_API_VERSION || !VITE_DATASET || !token) {
     console.warn('[prerender] Missing Sanity env vars - skipping static HTML injection.');
     return null;
   }
@@ -180,7 +145,7 @@ const fetchSanityData = async () => {
     COMBINED_QUERY,
   )}`;
   const response = await fetch(url, {
-    headers: { Authorization: `Bearer ${VITE_API_TOKEN}` },
+    headers: { Authorization: `Bearer ${token}` },
   });
 
   if (!response.ok) {
@@ -208,6 +173,35 @@ const writeRouteHtml = (baseHtml, route, snapshot) => {
   fs.writeFileSync(path.join(outDir, 'index.html'), html);
 };
 
+// Unknown paths must get a real 404 status, not the home page's HTML with a
+// 200. vercel.json therefore rewrites only known routes to the SPA; anything
+// else falls through to this file, which Vercel serves with status 404. The
+// app still boots on it and renders the NotFound route.
+const write404 = (baseHtml) => {
+  const meta = ROUTES_CONFIG.notFound;
+  let html = applyRouteMeta(baseHtml, '/', meta);
+  html = html.replace(/<link rel="canonical"[^>]*>\s*/, '');
+  html = html.replace('</head>', '  <meta name="robots" content="noindex, nofollow" />\n</head>');
+  html = html.replace(
+    '<div id="root"></div>',
+    '<div id="ssg-fallback" aria-hidden="true" class="ssg-fallback"><h1>page not found</h1></div>\n  <div id="root"></div>',
+  );
+  fs.writeFileSync(path.join(distDir, '404.html'), html);
+  console.log('[prerender] Wrote 404.html');
+};
+
+// With no catch-all rewrite, a route missing from vercel.json would 404 in
+// production whenever its prerendered HTML isn't produced (e.g. Sanity was
+// unreachable at build time). Fail the build instead of shipping that.
+const assertRewritesCoverRoutes = () => {
+  const vercel = JSON.parse(fs.readFileSync(path.join(rootDir, 'vercel.json'), 'utf8'));
+  const sources = new Set((vercel.rewrites ?? []).map((rewrite) => rewrite.source));
+  const missing = PORTFOLIO_ROUTES.filter((route) => route !== '/' && !sources.has(route));
+  if (missing.length) {
+    throw new Error(`vercel.json has no SPA rewrite for route(s): ${missing.join(', ')}`);
+  }
+};
+
 const main = async () => {
   const baseHtmlPath = path.join(distDir, 'index.html');
   if (!fs.existsSync(baseHtmlPath)) {
@@ -215,7 +209,11 @@ const main = async () => {
     process.exit(1);
   }
 
+  assertRewritesCoverRoutes();
+  writeSitemap();
+
   const baseHtml = fs.readFileSync(baseHtmlPath, 'utf8');
+  write404(baseHtml);
   const data = await fetchSanityData();
 
   if (!data) {

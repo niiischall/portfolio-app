@@ -1,21 +1,20 @@
 import { lazy, Suspense } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Navigate, Routes, Route, useLocation } from 'react-router-dom';
 
 import Navigation from '../sections/Navigation';
 import Hero from '../sections/Hero';
 import About from '../sections/About';
 import Work from '../sections/Work';
-import Experiments from '../sections/Experiments';
 import Writings from '../sections/Writings';
-import Contact from '../sections/Contact';
-import Talks from '../sections/Talks';
+import NotFound from '../sections/NotFound';
 import Footer from '../sections/Footer';
 import PageSkeleton from './PageSkeleton';
+import { resolveSocials } from './SocialLinks';
 import PageMeta from './PageMeta';
 import StructuredData from './StructuredData';
 
 import { useSanityData } from '../lib/sanity-client';
-import { getRouteMeta } from '../config/route-meta';
+import { getRouteMeta, NOT_FOUND_META } from '../config/route-meta';
 
 const StudioPage = lazy(() => import('../sanity/Studio'));
 
@@ -43,12 +42,13 @@ const PortfolioLayout = () => {
     return (
       <>
         <PageMeta meta={routeMeta} pathname={pathname} />
-        <div className="min-h-screen flex flex-col bg-light">
+        <div className="min-h-screen flex flex-col">
         <main
           id="main-content"
+          tabIndex={-1}
           className="flex-1 flex items-center justify-center px-4 text-center"
         >
-          <p className="font-ovo text-primary max-w-md">
+          <p className="font-sans text-primary max-w-md">
             Something went wrong while loading the site. Please refresh and try again.
           </p>
         </main>
@@ -59,21 +59,40 @@ const PortfolioLayout = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <PageMeta meta={routeMeta} pathname={pathname} />
-      <StructuredData email={data?.footer?.email} writings={data?.writings?.collection} />
-      <Navigation data={data?.navigation} hero={data?.hero} />
-      <main id="main-content" className="flex-1 flex flex-col bg-light">
+      <PageMeta meta={routeMeta} pathname={pathname} noIndex={routeMeta === NOT_FOUND_META} />
+      <StructuredData
+        email={data?.footer?.email}
+        writings={data?.writings?.collection}
+        pathname={pathname}
+      />
+      <Navigation data={data?.navigation} socials={resolveSocials(data?.footer?.socials, data?.hero?.socials)} />
+      <main id="main-content" tabIndex={-1} className="flex-1 flex flex-col">
         <Routes>
-          <Route path="/" Component={() => <Hero data={data?.hero} />} />
-          <Route path="/about" Component={() => <About data={data?.about} />} />
-          <Route path="/work" Component={() => <Work data={data?.work} />} />
-          <Route path="/experiments" Component={() => <Experiments data={data?.experiments} />} />
-          <Route path="/writings" Component={() => <Writings data={data?.writings} />} />
-          <Route path="/talks" Component={() => <Talks data={data?.talks} />} />
-          <Route path="/contact" Component={() => <Contact data={data?.contact} />} />
+          <Route path="/" Component={() => <Hero data={data?.hero} writings={data?.writings?.collection} />} />
+          {/* Work is a section of About now, not its own page. */}
+          <Route
+            path="/about"
+            Component={() => (
+              <>
+                <About
+                  data={data?.about}
+                  socials={resolveSocials(data?.footer?.socials, data?.hero?.socials)}
+                  email={data?.footer?.email}
+                />
+                <Work data={data?.work} />
+              </>
+            )}
+          />
+          <Route path="/writing" Component={() => <Writings data={data?.writings} />} />
+          {/* Client-side counterparts of the vercel.json redirects: those never
+              fire for in-app <Link> navigation, and don't exist in vite dev. */}
+          <Route path="/writings" element={<Navigate to="/writing" replace />} />
+          <Route path="/work" element={<Navigate to="/about" replace />} />
+          {/* Experiments, talks and contact were removed; they fall through here. */}
+          <Route path="*" Component={NotFound} />
         </Routes>
       </main>
-      <Footer data={data?.footer} navigation={data?.navigation} heroSocials={data?.hero?.socials} />
+      <Footer data={data?.footer} heroSocials={data?.hero?.socials} />
     </div>
   );
 };

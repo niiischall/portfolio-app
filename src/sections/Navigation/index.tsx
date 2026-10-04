@@ -1,12 +1,12 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import type { TypedObject } from 'sanity';
+import React, { useMemo, useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
-import { HeroSocialType, NavigationCollectionType } from '../../utils/helpers/types';
+import type { FooterSocialType, NavigationCollectionType } from '../../utils/helpers/types';
 import Button from '../../components/Button';
 import ThemeToggle from '../../components/ThemeToggle';
-import { urlForImage } from '../../lib/sanity.image';
-import { normalizePath } from '../../utils/helpers/routes';
+import SocialLinks from '../../components/SocialLinks';
+import { PERSON_NAME } from '../../config/site';
+import { isExternalUrl, isLiveRoute, resolvePath } from '../../utils/helpers/routes';
 import { getLinkProps } from '../../utils/helpers/link-props';
 import { ANALYTICS_EVENTS } from '../../utils/helpers/analytics';
 
@@ -20,32 +20,25 @@ export interface NavigationProps {
     };
     collection: NavigationCollectionType[];
   };
-  hero: {
-    socials: HeroSocialType[];
-    greeting: {
-      link: {
-        text: string;
-        slug: {
-          current: string;
-        };
-      };
-      text: TypedObject[];
-    };
-    cover: {
-      asset: {
-        _type: string;
-        _ref: string;
-      };
-      _type: string;
-    };
-  };
+  socials?: FooterSocialType[];
 }
 
 const MOBILE_MENU_ID = 'mobile-menu';
 
-const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
-  const { collection = [] } = data ?? {};
-  const { cover } = hero ?? {};
+const Navigation: React.FC<NavigationProps> = ({ data, socials = [] }) => {
+  const { collection: rawCollection = [] } = data ?? {};
+  // Nav items live in Sanity. Drop any that point at a removed section, and
+  // collapse items that now resolve to the same page (work -> about).
+  const collection = useMemo(() => {
+    const seen = new Set<string>();
+    return rawCollection.filter((item: NavigationCollectionType) => {
+      const path = resolvePath(item.slug?.current);
+      if (!isExternalUrl(path) && !isLiveRoute(path)) return false;
+      if (seen.has(path)) return false;
+      seen.add(path);
+      return true;
+    });
+  }, [rawCollection]);
   const [menuShowcase, setMenuShowcase] = useState<boolean>(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuPanelRef = useRef<HTMLDivElement>(null);
@@ -114,21 +107,23 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
     if (collection.length === 0) return null;
 
     return collection.map((navItem: NavigationCollectionType) => {
-      const isCurrentLocation = currentPath === normalizePath(navItem.slug.current);
+      const isCurrentLocation = currentPath === resolvePath(navItem.slug.current);
       const linkProps = getLinkProps(navItem.slug.current);
 
       return (
         <li key={navItem._key}>
           <Button
             {...linkProps}
-            styles={`text-2xl font-sans font-bold px-4 text-primary hover:text-secondary duration-200 ${
-              isCurrentLocation ? 'text-secondary' : 'text-primary'
+            styles={`text-2xl font-sans font-bold px-4 hover:underline underline-offset-4 decoration-muted ${
+              isCurrentLocation ? 'font-semibold text-primary' : 'text-muted hover:text-primary'
             }`}
             onClick={closeMobileMenu}
+            ariaCurrent={isCurrentLocation ? 'page' : undefined}
             analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
             analyticsProperties={{
-              surface: 'mobile_menu',
-              destination: normalizePath(navItem.slug.current),
+              section: 'mobile_menu',
+              surface: 'nav',
+              destination: resolvePath(navItem.slug.current),
               label: navItem.title,
             }}
           >
@@ -143,7 +138,7 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
     if (collection.length === 0) return null;
 
     return collection.map((navItem: NavigationCollectionType) => {
-      const isCurrentLocation = currentPath === normalizePath(navItem.slug.current);
+      const isCurrentLocation = currentPath === resolvePath(navItem.slug.current);
       const linkProps = getLinkProps(navItem.slug.current);
 
       return (
@@ -151,13 +146,15 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
           <div className="flex flex-col items-center">
             <Button
               {...linkProps}
-              styles={`text-xl font-sans font-bold px-4 duration-200 text-primary hover:text-secondary ${
-                isCurrentLocation ? 'text-secondary' : 'text-primary'
+              styles={`text-base font-sans px-3 hover:underline underline-offset-4 decoration-muted rounded-sm ${
+                isCurrentLocation ? 'font-semibold text-primary' : 'text-muted hover:text-primary'
               }`}
+              ariaCurrent={isCurrentLocation ? 'page' : undefined}
               analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
               analyticsProperties={{
-                surface: 'header',
-                destination: normalizePath(navItem.slug.current),
+                section: 'header',
+                surface: 'nav',
+                destination: resolvePath(navItem.slug.current),
                 label: navItem.title,
               }}
             >
@@ -169,34 +166,26 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
     });
   }, [collection, currentPath]);
 
-  const profileImageUrl = cover?.asset?._ref ? urlForImage(cover)?.width(128).height(128).url() : undefined;
-
   return (
-    <header className="px-4 py-8 md:px-8 md:py-12 bg-light transition-colors duration-200">
+    <header className="px-4 py-3 md:px-8 md:py-4 transition-colors duration-200">
       <div className="max-w-4xl mx-auto w-full">
         <nav className="relative flex w-full items-center justify-between" aria-label="Main navigation">
-          <div className="shrink-0 w-14 h-14 md:w-20 md:h-20">
-            {profileImageUrl ? (
-              <Button
-                to="/"
-                styles="block w-full h-full rounded-full"
-                analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
-                analyticsProperties={{
-                  surface: 'header',
-                  destination: '/',
-                  label: 'profile',
-                }}
-              >
-                <img className="w-full h-full object-cover rounded-full" src={profileImageUrl} alt="Profile" />
-              </Button>
-            ) : null}
-          </div>
+          <Button
+            to="/"
+            styles="shrink-0 font-serif text-[1.375rem] leading-none text-primary rounded-sm"
+            ariaLabel={`${PERSON_NAME} — home`}
+            analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
+            analyticsProperties={{ section: 'header', surface: 'wordmark', destination: '/', label: PERSON_NAME }}
+          >
+            {PERSON_NAME}
+          </Button>
 
           <ul className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 md:flex space-x-2">
             {renderNavigationItems()}
           </ul>
 
-          <div className="flex shrink-0 items-center">
+          <div className="flex shrink-0 items-center gap-3">
+            <SocialLinks socials={socials} surface="header" iconSize={22} className="hidden lg:flex" />
             <ThemeToggle />
             <Button
               ref={menuButtonRef}
@@ -206,7 +195,8 @@ const Navigation: React.FC<NavigationProps> = ({ data, hero }) => {
               onClick={toggleMobileMenuShow}
               analyticsEvent={ANALYTICS_EVENTS.MENU_TOGGLE}
               analyticsProperties={{
-                surface: 'mobile_menu',
+                section: 'header',
+                surface: 'menu_button',
                 action: menuShowcase ? 'close' : 'open',
               }}
               ariaLabel={menuShowcase ? 'Close menu' : 'Open menu'}

@@ -62,25 +62,35 @@ export default defineType({
               options: {
                 hotspot: true,
               },
-              description: 'This image will be used as the cover image for the writing.',
+              description: 'Not currently shown on the site (writing renders as text rows). Kept so it can be reinstated.',
             }),
             defineField({
               type: 'text',
               name: 'heading',
               title: 'Heading',
-              description: 'This image will be used as the heading for the writing.',
+              description: 'Post title, shown on the row.',
             }),
             defineField({
               type: 'text',
               name: 'body',
               title: 'Body',
-              description: 'This image will be used as the body for the writing.',
+              description: 'One- or two-sentence summary. Shown on the row when no published date is set.',
             }),
             defineField({
               type: 'url',
               name: 'link',
               title: 'URL',
-              description: 'This image will be used as the link for the writing.',
+              description: 'Link to the full post.',
+            }),
+            defineField({
+              // `date`, not `datetime`: a publication day has no time or zone,
+              // and datetime invites an off-by-one when rendered.
+              type: 'date',
+              name: 'publishedAt',
+              title: 'Published',
+              description:
+                'Optional. When set, the row shows this date instead of the summary, and it is added to the structured data.',
+              options: {dateFormat: 'MMM D, YYYY'},
             }),
           ],
         }),

@@ -3,7 +3,7 @@ import { usePostHog } from 'posthog-js/react';
 import type { ReactNode } from 'react';
 
 import { ANALYTICS_EVENTS, trackEvent } from '../../utils/helpers/analytics';
-import { isExternalUrl, normalizePath } from '../../utils/helpers/routes';
+import { isExternalUrl, resolvePath } from '../../utils/helpers/routes';
 
 type LinkValue = {
   href?: string;
@@ -36,6 +36,7 @@ function TrackedLink({
     if (external) {
       trackEvent(capture, ANALYTICS_EVENTS.EXTERNAL_CLICK, {
         section,
+        surface: 'rich_text',
         url: href,
         label,
       });
@@ -44,7 +45,10 @@ function TrackedLink({
 
     trackEvent(capture, ANALYTICS_EVENTS.NAV_CLICK, {
       section,
-      destination: normalizePath(href),
+      surface: 'rich_text',
+      // resolvePath follows renames, so a CMS link to /writings is recorded
+      // as /writing — the page the visitor actually lands on.
+      destination: resolvePath(href),
       label,
     });
   };

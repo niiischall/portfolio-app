@@ -6,18 +6,21 @@
   <link rel="icon" href="/favicon.ico" />
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="apple-touch-icon" href="/icons/icon-192.png" />
-  <link rel="preload" href="/fonts/Ovo-Regular.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preconnect" href="https://cdn.sanity.io" crossorigin />
+  <link rel="preload" href="/fonts/IBMPlexSans-400-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/Newsreader-Variable-latin.woff2" as="font" type="font/woff2" crossorigin />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description"
     content="hey 👋, i'm nischal nikit. i build things that live on the web. i also talk & write about some of those things. this is my corner of the internet." />
   <meta name="keywords" content="nischal nikit, personal website, portfolio" />
-  <meta name="theme-color" content="#ba265c" />
+  <!-- Pre-paint literals; must mirror --color-light in src/index.css. -->
+  <meta name="theme-color" content="#F6EFE0" />
   <link rel="canonical" href="__SITE_URL__/" />
   <link rel="me" href="https://github.com/niiischall" />
   <link rel="me" href="https://www.linkedin.com/in/niiischall" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Nischal Nikit" />
-  <meta property="og:title" content="hey! i am nischal! 👋" />
+  <meta property="og:title" content="Nischal Nikit — Product Engineer, Bangalore" />
   <meta property="og:description"
     content="hey 👋, i'm nischal nikit. i build things that live on the web. i also talk & write about some of those things. this is my corner of the internet." />
   <meta property="og:url" content="__SITE_URL__/" />
@@ -26,17 +29,21 @@
   <meta property="og:image:height" content="630" />
   <meta property="og:locale" content="en_US" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="hey! i am nischal! 👋" />
+  <meta name="twitter:title" content="Nischal Nikit — Product Engineer, Bangalore" />
   <meta name="twitter:description"
     content="hey 👋, i'm nischal nikit. i build things that live on the web. i also talk & write about some of those things. this is my corner of the internet." />
   <meta name="twitter:image" content="__SITE_URL__/og-cover.jpg" />
-  <title>hey! i am nischal! 👋</title>
+  <title>Nischal Nikit — Product Engineer, Bangalore</title>
   <script>
     (function () {
       var stored = localStorage.getItem('theme');
       var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       var theme = stored === 'dark' || stored === 'light' ? stored : (prefersDark ? 'dark' : 'light');
-      if (theme === 'dark') document.documentElement.classList.add('dark');
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', '#221C15');
+      }
     })();
   </script>
   <style>

@@ -36,31 +36,10 @@ export const workQuery = `*[_type == "work"][0]{
     _key,
     title,
     designation,
+    meta,
     link,
     duration,
     description,
-    cover
-  }
-}`;
-
-export const experimentsQuery = `*[_type == "experiments"][0]{
-  heading,
-  collection[]{
-    _key,
-    heading,
-    body,
-    image,
-    link,
-  }
-}`;
-
-export const talksQuery = `*[_type == "talks"][0]{
-  heading,
-  collection[]{
-    _key,
-    heading,
-    body,
-    link,
     cover
   }
 }`;
@@ -72,14 +51,9 @@ export const writingsQuery = `*[_type == "writings"][0]{
     image,
     heading,
     body,
-    link
+    link,
+    publishedAt
   }
-}`;
-
-export const contactQuery = `*[_type == "contact"][0]{
-  heading,
-  text,
-  link,  
 }`;
 
 export const footerQuery = `*[_type == "footer"][0]{
@@ -90,14 +64,13 @@ export const footerQuery = `*[_type == "footer"][0]{
   collection,
 }`;
 
-export const combinedQuery = encodeURIComponent(`{
+// Raw GROQ. Consumers are responsible for encoding (the API route uses
+// URLSearchParams, which encodes correctly). Never interpolate user input here.
+export const combinedQuery = `{
     "navigation": ${navigationQuery},
     "hero": ${heroQuery},
     "about": ${aboutQuery},
     "work": ${workQuery},
-    "experiments": ${experimentsQuery},
     "writings": ${writingsQuery},
-    "talks": ${talksQuery},
-    "contact": ${contactQuery},
     "footer": ${footerQuery}
-  }`);
+  }`;

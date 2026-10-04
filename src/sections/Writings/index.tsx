@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
-
-import PortfolioGridSection from '../../components/PortfolioGridSection';
-import type { WritingsCollectionType } from '../../utils/helpers/types';
 import type { TypedObject } from 'sanity';
+
+import IndexSection, { type IndexItem } from '../../components/IndexSection';
+import { formatDate } from '../../utils/helpers/date';
+import type { WritingsCollectionType } from '../../utils/helpers/types';
 
 export interface WritingsProps {
   data: {
@@ -13,24 +14,26 @@ export interface WritingsProps {
   };
 }
 
+/** Shared by /writing and the home index so both rows render identically. */
+export const toWritingItems = (collection: WritingsCollectionType[] = []): IndexItem[] =>
+  collection.map((item) => ({
+    _key: item._key,
+    heading: item.heading,
+    // Date when one is set in Studio, otherwise the summary.
+    meta: formatDate(item.publishedAt) || item.body,
+    href: item.link || undefined,
+  }));
+
 const Writings: React.FC<WritingsProps> = ({ data }) => {
   const { heading, collection = [] } = data ?? {};
-  const { title = [] } = heading ?? {};
-
-  const items = useMemo(
-    () =>
-      collection.map((item) => ({
-        _key: item._key,
-        heading: item.heading,
-        body: item.body,
-        image: item.image,
-        href: item.link || undefined,
-      })),
-    [collection],
-  );
+  const items = useMemo(() => toWritingItems(collection), [collection]);
 
   return (
-    <PortfolioGridSection id="writings" title={title} collection={items} analyticsSection="writings" />
+    <div className="px-4 pt-12 pb-24 md:px-8">
+      <div className="max-w-4xl md:mx-auto">
+        <IndexSection id="writing" title={heading?.title ?? []} items={items} analyticsSection="writings" />
+      </div>
+    </div>
   );
 };
 

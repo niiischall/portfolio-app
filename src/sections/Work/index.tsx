@@ -1,14 +1,11 @@
 import React from 'react';
 import { PortableText } from '@portabletext/react';
 
-import Building from '../../utils/svgs/Building';
-import Clock from '../../utils/svgs/Clock';
-import { urlForImage } from '../../lib/sanity.image';
 import { WorkCollectionType } from '../../utils/helpers/types';
 import type { TypedObject } from 'sanity';
 import Button from '../../components/Button';
-import Click from '../../utils/svgs/Click';
 import { ANALYTICS_EVENTS } from '../../utils/helpers/analytics';
+import { sectionHeadingPortableTextComponents } from '../../components/portableText/pageHeading';
 
 export interface WorkProps {
   data: {
@@ -19,73 +16,98 @@ export interface WorkProps {
   };
 }
 
+// Highlights are entered one per line in Studio. A single line (how the
+// existing entries are written) stays a paragraph.
+const toHighlights = (description = '') =>
+  description
+    .split('\n')
+    .map((line) => line.replace(/^\s*[-•*]\s*/, '').trim())
+    .filter(Boolean);
+
+/** The work timeline, rendered as a section of /about. */
 const Work: React.FC<WorkProps> = ({ data }) => {
   const { heading, collection = [] } = data ?? {};
   const { title = [] } = heading ?? {};
 
-  const renderCollection = () => {
-    return collection.map((item: WorkCollectionType) => {
-      const { designation = '', description = '', link, cover, duration } = item ?? {};
-      const { name: orgName = '', href: orgLink = '' } = link ?? {};
-      const { start = '', end = '' } = duration ?? {};
-
-      return (
-        <div key={item._key} className="relative">
-          <div className="w-full h-full flex justify-between">
-            <div className="absolute top-0 left-[3%] w-[2px] min-h-full bg-primary" />
-            <div className="mt-8 z-10">
-              <img
-                className="border-solid border-2 border-primary"
-                src={urlForImage(cover)?.width(48).height(48).url()}
-                alt={orgName}
-                loading="lazy"
-              />
-            </div>
-            <div className="w-[95%] p-8">
-              <h3 className="font-sans font-bold">{designation}</h3>
-              <div className="flex items-center space-x-1">
-                <Building />
-                {orgLink ? (
-                  <Button
-                    href={orgLink}
-                    external
-                    styles="text-link text-secondary font-bold rounded-sm px-1 -mx-1 transition-colors"
-                    analyticsEvent={ANALYTICS_EVENTS.EXTERNAL_CLICK}
-                    analyticsProperties={{ section: 'work', label: orgName, url: orgLink }}
-                  >
-                    <div className="flex gap-2">
-                      {orgName}
-                      <Click style={{ width: '16px', height: '16px' }} aria-hidden="true" />
-                    </div>
-                  </Button>
-                ) : (
-                  <span className="text-secondary font-bold">{orgName}</span>
-                )}
-              </div>
-              <div className="flex items-center space-x-1">
-                <Clock />
-                <p className="font-bold">
-                  {start} - {end}
-                </p>
-              </div>
-              <p>{description}</p>
-            </div>
-          </div>
-        </div>
-      );
-    });
-  };
-
   return (
-    <section
-      id="work"
-      className="px-4 pt-12 pb-24 px-relative flex flex-col justify-center items-start space-y-8 md:px-8 md:items-left md:mx-auto"
-    >
-      <div className="text-left p-0">
-        <PortableText value={title} />
-      </div>
+    <section id="work" className="px-4 pb-24 md:px-8">
       <div className="max-w-4xl md:mx-auto">
-        <div className="w-full pt-10 px-0 relative overflow-hidden">{renderCollection()}</div>
+        <div className="mb-12">
+          <PortableText value={title} components={sectionHeadingPortableTextComponents} />
+        </div>
+
+        <ol className="ml-[7px] border-l border-rule">
+          {collection.map((item) => {
+            const { designation = '', description = '', meta = '', link, duration } = item ?? {};
+            const { name: orgName = '', href: orgLink = '' } = link ?? {};
+            const { start = '', end = '' } = duration ?? {};
+            const highlights = toHighlights(description);
+            // From the data, not the position: reordering entries in Studio
+            // shouldn't move the "current role" marker.
+            const isCurrent = /present|current/i.test(end);
+
+            return (
+              <li key={item._key} className="relative pb-14 pl-9 last:pb-0">
+                {/* Rail marker: the current role is filled with a soft halo,
+                    past roles are hollow rings. */}
+                <span
+                  aria-hidden="true"
+                  className={`absolute -left-[7px] top-[0.35rem] h-[13px] w-[13px] rounded-full ${
+                    isCurrent ? 'bg-primary ring-4 ring-primary/20' : 'border-2 border-muted bg-light'
+                  }`}
+                />
+
+                {start || end ? (
+                  <p className="font-[ui-monospace,SFMono-Regular,Menlo,monospace] text-[0.8125rem] tracking-[0.04em] text-muted">
+                    {start}
+                    {end ? ` – ${end}` : ''}
+                  </p>
+                ) : null}
+
+                <h3 className="mt-2 font-sans text-[1.1875rem] font-semibold leading-snug">
+                  {designation}
+                  {orgName ? (
+                    <>
+                      <span className="font-normal text-muted"> at </span>
+                      {orgLink ? (
+                        <Button
+                          href={orgLink}
+                          styles="underline decoration-muted underline-offset-4 hover:decoration-current rounded-sm"
+                          analyticsEvent={ANALYTICS_EVENTS.EXTERNAL_CLICK}
+                          analyticsProperties={{ section: 'work', surface: 'company', label: orgName, url: orgLink }}
+                        >
+                          {orgName}
+                          <span className="sr-only"> (opens in a new tab)</span>
+                        </Button>
+                      ) : (
+                        orgName
+                      )}
+                    </>
+                  ) : null}
+                </h3>
+
+                {meta ? <p className="mt-1 text-[0.9375rem] text-muted">{meta}</p> : null}
+
+                {highlights.length > 1 ? (
+                  <ul className="mt-4 max-w-2xl space-y-2.5">
+                    {highlights.map((line) => (
+                      <li
+                        key={line}
+                        className="relative pl-6 font-serif text-[1.0625rem] leading-relaxed text-primary/90 before:absolute before:left-0 before:top-[0.6em] before:h-[7px] before:w-[7px] before:rounded-full before:border before:border-muted"
+                      >
+                        {line}
+                      </li>
+                    ))}
+                  </ul>
+                ) : highlights.length === 1 ? (
+                  <p className="mt-4 max-w-2xl font-serif text-[1.0625rem] leading-relaxed text-primary/90">
+                    {highlights[0]}
+                  </p>
+                ) : null}
+              </li>
+            );
+          })}
+        </ol>
       </div>
     </section>
   );

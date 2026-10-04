@@ -10,3 +10,6 @@
 .env
 package-lock.json
 node_modules
+
+# TypeScript incremental build cache
+*.tsbuildinfo
