@@ -3,22 +3,22 @@
     {
       "source": "/writings",
       "destination": "/writing",
-      "permanent": false
+      "permanent": true
     },
     {
       "source": "/writings/",
       "destination": "/writing",
-      "permanent": false
+      "permanent": true
     },
     {
       "source": "/work",
       "destination": "/about",
-      "permanent": false
+      "permanent": true
     },
     {
       "source": "/work/",
       "destination": "/about",
-      "permanent": false
+      "permanent": true
     }
   ],
   "rewrites": [
