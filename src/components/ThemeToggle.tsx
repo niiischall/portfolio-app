@@ -1,6 +1,8 @@
 import { Monitor, Moon, Sun } from '@phosphor-icons/react';
+import { usePostHog } from 'posthog-js/react';
 
 import { type ThemeChoice, useTheme } from '../context/ThemeContext';
+import { ANALYTICS_EVENTS, trackEvent } from '../utils/helpers/analytics';
 
 const OPTIONS: { value: ThemeChoice; label: string; Icon: typeof Sun }[] = [
   { value: 'light', label: 'Light theme', Icon: Sun },
@@ -17,6 +19,17 @@ const OPTIONS: { value: ThemeChoice; label: string; Icon: typeof Sun }[] = [
  */
 const ThemeToggle = () => {
   const { choice, setTheme } = useTheme();
+  const posthog = usePostHog();
+
+  const choose = (next: ThemeChoice) => {
+    trackEvent(posthog?.capture.bind(posthog), ANALYTICS_EVENTS.THEME_CHANGE, {
+      section: 'header',
+      surface: 'theme_toggle',
+      choice: next,
+      previous: choice,
+    });
+    setTheme(next);
+  };
 
   return (
     <fieldset className="flex items-center gap-0.5 rounded-full border border-rule p-0.5">
@@ -34,7 +47,7 @@ const ThemeToggle = () => {
             name="theme"
             value={value}
             checked={choice === value}
-            onChange={() => setTheme(value)}
+            onChange={() => choose(value)}
             className="sr-only"
           />
           <Icon size={15} weight="regular" aria-hidden="true" />

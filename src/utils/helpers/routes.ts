@@ -31,3 +31,14 @@ export const resolvePath = (slug: string | undefined): string => {
 
 /** True for routes the site actually serves. Removed sections return false. */
 export const isLiveRoute = (path: string): boolean => path in routesConfig.routes;
+
+const stripTrailingSlash = (path: string) => (path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path);
+
+/** True for an old URL that only exists to redirect (e.g. /writings). */
+export const isRedirectSource = (path: string): boolean => stripTrailingSlash(path) in REDIRECTS;
+
+/** True when a path renders the 404 page: not a page, not a redirect, not the Studio. */
+export const isNotFoundPath = (path: string): boolean => {
+  const clean = stripTrailingSlash(path);
+  return !isLiveRoute(clean) && !isRedirectSource(clean) && !clean.startsWith('/studio');
+};

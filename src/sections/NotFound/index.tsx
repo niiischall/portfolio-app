@@ -12,7 +12,7 @@ const NotFound: React.FC = () => (
         to="/"
         styles="btn lowercase"
         analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
-        analyticsProperties={{ surface: 'not_found', destination: '/', label: 'back home' }}
+        analyticsProperties={{ section: 'not_found', surface: 'back_home', destination: '/', label: 'back home' }}
       >
         back home
       </Button>

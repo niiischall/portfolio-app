@@ -72,7 +72,7 @@ const Work: React.FC<WorkProps> = ({ data }) => {
                           href={orgLink}
                           styles="underline decoration-muted underline-offset-4 hover:decoration-current rounded-sm"
                           analyticsEvent={ANALYTICS_EVENTS.EXTERNAL_CLICK}
-                          analyticsProperties={{ section: 'work', label: orgName, url: orgLink }}
+                          analyticsProperties={{ section: 'work', surface: 'company', label: orgName, url: orgLink }}
                         >
                           {orgName}
                           <span className="sr-only"> (opens in a new tab)</span>

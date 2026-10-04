@@ -97,7 +97,7 @@ const About: React.FC<AboutProps> = ({ data, socials = [], email = '' }) => {
                     external
                     styles={inlineLink}
                     analyticsEvent={ANALYTICS_EVENTS.EXTERNAL_CLICK}
-                    analyticsProperties={{ section: 'about', label: cvTitle || 'cv', url: cvLink }}
+                    analyticsProperties={{ section: 'about', surface: 'cv', label: cvTitle || 'cv', url: cvLink }}
                   >
                     CV
                   </Button>

@@ -49,7 +49,7 @@ const IndexRow: React.FC<{ item: IndexItem; analyticsSection: string }> = ({ ite
           href={item.href}
           styles={`group ${rowStyles} rounded-sm`}
           analyticsEvent={ANALYTICS_EVENTS.EXTERNAL_CLICK}
-          analyticsProperties={{ section: analyticsSection, label: item.heading, url: item.href }}
+          analyticsProperties={{ section: analyticsSection, surface: 'row', label: item.heading, url: item.href }}
         >
           {content}
           {/^https?:/i.test(item.href) ? <span className="sr-only"> (opens in a new tab)</span> : null}
@@ -77,7 +77,7 @@ const IndexSection: React.FC<IndexSectionProps> = ({ id, items, analyticsSection
             to={allLink.to}
             styles="font-sans text-sm text-muted hover:text-primary hover:underline underline-offset-4 decoration-muted rounded-sm"
             analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
-            analyticsProperties={{ surface: analyticsSection, destination: allLink.to, label: allLink.text }}
+            analyticsProperties={{ section: analyticsSection, surface: 'all_link', destination: allLink.to, label: allLink.text }}
           >
             {allLink.text} <span aria-hidden="true">→</span>
           </Button>

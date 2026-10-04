@@ -121,7 +121,8 @@ const Navigation: React.FC<NavigationProps> = ({ data, socials = [] }) => {
             ariaCurrent={isCurrentLocation ? 'page' : undefined}
             analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
             analyticsProperties={{
-              surface: 'mobile_menu',
+              section: 'mobile_menu',
+              surface: 'nav',
               destination: resolvePath(navItem.slug.current),
               label: navItem.title,
             }}
@@ -151,7 +152,8 @@ const Navigation: React.FC<NavigationProps> = ({ data, socials = [] }) => {
               ariaCurrent={isCurrentLocation ? 'page' : undefined}
               analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
               analyticsProperties={{
-                surface: 'header',
+                section: 'header',
+                surface: 'nav',
                 destination: resolvePath(navItem.slug.current),
                 label: navItem.title,
               }}
@@ -173,7 +175,7 @@ const Navigation: React.FC<NavigationProps> = ({ data, socials = [] }) => {
             styles="shrink-0 font-serif text-[1.375rem] leading-none text-primary rounded-sm"
             ariaLabel={`${PERSON_NAME} — home`}
             analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
-            analyticsProperties={{ surface: 'header', destination: '/', label: 'wordmark' }}
+            analyticsProperties={{ section: 'header', surface: 'wordmark', destination: '/', label: PERSON_NAME }}
           >
             {PERSON_NAME}
           </Button>
@@ -193,7 +195,8 @@ const Navigation: React.FC<NavigationProps> = ({ data, socials = [] }) => {
               onClick={toggleMobileMenuShow}
               analyticsEvent={ANALYTICS_EVENTS.MENU_TOGGLE}
               analyticsProperties={{
-                surface: 'mobile_menu',
+                section: 'header',
+                surface: 'menu_button',
                 action: menuShowcase ? 'close' : 'open',
               }}
               ariaLabel={menuShowcase ? 'Close menu' : 'Open menu'}

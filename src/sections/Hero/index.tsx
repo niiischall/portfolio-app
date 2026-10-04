@@ -115,7 +115,7 @@ const Hero: React.FC<HeroProps> = ({ data, writings = [] }) => {
                 analyticsEvent={ANALYTICS_EVENTS.NAV_CLICK}
                 analyticsProperties={{
                   section: 'hero',
-                  surface: 'cross_link',
+                  surface: 'intro',
                   destination: '/about',
                   label: 'more about me',
                 }}
