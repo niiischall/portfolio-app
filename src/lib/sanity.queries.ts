@@ -46,14 +46,15 @@ export const workQuery = `*[_type == "work"][0]{
 
 export const writingsQuery = `*[_type == "writings"][0]{
   heading,
-  collection[]{
+  // coalesce: GROQ returns null (not []) for an empty array field.
+  "collection": coalesce(collection[]{
     _key,
     image,
     heading,
     body,
     link,
     publishedAt
-  }
+  }, [])
 }`;
 
 export const footerQuery = `*[_type == "footer"][0]{
